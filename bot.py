@@ -20,6 +20,9 @@ DB_FILE = "/data/database.db"
 DATA_FILE = "data.json" 
 BACKUP_FILE = "data_backup.json"
 
+BATTLE_REPORT_CHANNEL_ID = 1500525099655102525
+TECHSORCIST_RECORDS_CHANNEL_ID = 1505702243666497688
+
 event_active = False
 
 intents = discord.Intents.default() 
@@ -106,6 +109,28 @@ def get_member_days(member: discord.Member):
     if not member.joined_at:
         return 0
     return (datetime.now(timezone.utc) - member.joined_at).days
+
+def battle_reports_only():
+    async def predicate(interaction: discord.Interaction):
+        if interaction.channel_id != BATTLE_REPORT_CHANNEL_ID:
+            await interaction.response.send_message(
+                "❌ Battle reports may only be used in the designated Battle Reports channel.",
+                ephemeral=True
+            )
+            return False
+        return True
+    return app_commands.check(predicate)
+
+def techsorcist_records_only():
+    async def predicate(interaction: discord.Interaction):
+        if interaction.channel_id != TECHSORCIST_RECORDS_CHANNEL_ID:
+            await interaction.response.send_message(
+                "📜 This command may only be used in Techsorcist Records.",
+                ephemeral=True
+            )
+            return False
+        return True
+    return app_commands.check(predicate)
 
 # =========================
 # HELPERS (PUT GRID HERE)
@@ -784,6 +809,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 # OPERATION REPORT
 # ==================================================
 @bot.tree.command(name="operation_report")
+@battle_reports_only()
 @app_commands.choices(
     mission=MISSION_CHOICES,
     difficulty=OPERATION_DIFFICULTY_CHOICES,
@@ -854,6 +880,7 @@ async def operation_report(
 # ==================================================
 
 @bot.tree.command(name="stratagem_report")
+@battle_reports_only()
 @app_commands.choices(
     mission=MISSION_CHOICES,
     difficulty=STRATAGEM_DIFFICULTY_CHOICES,
@@ -927,6 +954,7 @@ async def stratagem_report(
 # ==================================================
 
 @bot.tree.command(name="siege_report")
+@battle_reports_only()
 @app_commands.choices(waves=WAVE_CHOICES)
 async def siege_report(interaction: discord.Interaction,
     waves: app_commands.Choice[int],
@@ -980,6 +1008,7 @@ async def siege_report(interaction: discord.Interaction,
 # ==================================================
 
 @bot.tree.command(name="pvp_report")
+@battle_reports_only()
 @app_commands.choices(victory=VICTORY_CHOICES)
 @app_commands.describe(
     mode="PvP mode (e.g. Arena, Siege, Skirmish)"
@@ -1038,6 +1067,7 @@ async def pvp_report(
 # ==================================================
 
 @bot.tree.command(name="exorsuits", description="Log an Exorsuits match result")
+@battle_reports_only()
 @app_commands.choices(victory=VICTORY_CHOICES)
 async def exorsuits(
     interaction: discord.Interaction,
@@ -1091,6 +1121,7 @@ async def exorsuits(
 # READY
 # ==================================================
 @bot.tree.command(name="relic_progress", description="View relic unlock progression for a member")
+@techsorcist_records_only()
 async def relic_progress(interaction: discord.Interaction, member: discord.Member = None):
 
     member = member or interaction.user
@@ -1122,6 +1153,7 @@ async def relic_progress(interaction: discord.Interaction, member: discord.Membe
     name="challenge_progress",
     description="View challenge progression for a member"
 )
+@techsorcist_records_only()
 async def challenge_progress(interaction: discord.Interaction, member: discord.Member = None):
 
     member = member or interaction.user
