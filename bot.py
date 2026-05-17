@@ -1244,7 +1244,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     try:
-        channel = await bot.fetch_channel(1500628323863101631)
+        channel = await bot.fetch_channel(1393664184771936279)
 
         await channel.send(
             f"... **INITIATE DETECTED** ...\n\n"
