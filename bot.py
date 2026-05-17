@@ -660,7 +660,7 @@ async def operation_report(interaction: discord.Interaction,
     embed = discord.Embed(title="⚔️ Operation Report", color=discord.Color.red())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
-    if gene_seed.value == "Found":
+        if gene_seed.value == "Found":
     gene_text = "Found (+1 Rites)"
 else:
     gene_text = "None"
