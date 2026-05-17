@@ -11,6 +11,8 @@ import asyncio
 import traceback
 import time 
 
+DATA_FILE = "data.json"
+
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
