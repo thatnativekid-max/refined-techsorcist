@@ -634,6 +634,7 @@ async def operation_report(interaction: discord.Interaction,
     await interaction.response.defer() # 🔥 FIX
 
     base = OPERATION_DIFFICULTY[difficulty.value]
+    difficulty_text = f"{difficulty.value} (+{base}Rites)"
     gene_bonus = 1 if gene_seed.value == "Found" else 0
     total_rites = base + gene_bonus
 
@@ -658,8 +659,13 @@ async def operation_report(interaction: discord.Interaction,
 
     embed = discord.Embed(title="⚔️ Operation Report", color=discord.Color.red())
     embed.add_field(name="Mission", value=mission.value, inline=False)
-    embed.add_field(name="Difficulty", value=difficulty.value, inline=False)
-    embed.add_field(name="Gene Seed", value=gene_seed.value, inline=False)
+    embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
+    if gene_seed.value == "Found":
+    gene_text = "Found (+1 Rites)"
+else:
+    gene_text = "None"
+
+embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
     screenshots = [screenshot1, screenshot2, screenshot3, screenshot4]
@@ -697,6 +703,7 @@ async def stratagem_report(interaction: discord.Interaction,
     await interaction.response.defer()  # 🔥 FIX
 
     base = STRATAGEM_DIFFICULTY[difficulty.value]
+    difficulty_text = f"{difficulty.value} (+{base}Rites)"
     gene_bonus = 1 if gene_seed.value == "Found" else 0
     total_rites = base + gene_bonus
 
@@ -721,8 +728,13 @@ async def stratagem_report(interaction: discord.Interaction,
 
     embed = discord.Embed(title="⚔️ Stratagem Report", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
-    embed.add_field(name="Difficulty", value=difficulty.value, inline=False)
-    embed.add_field(name="Gene Seed", value=gene_seed.value, inline=False)
+    embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
+    if gene_seed.value == "Found":
+    gene_text = "Found (+1 Rites)"
+else:
+    gene_text = "None"
+
+embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
     screenshots = [screenshot1, screenshot2, screenshot3, screenshot4]
