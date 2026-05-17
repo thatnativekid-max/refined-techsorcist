@@ -661,9 +661,9 @@ async def operation_report(interaction: discord.Interaction,
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
         if gene_seed.value == "Found":
-    gene_text = "Found (+1 Rites)"
-else:
-    gene_text = "None"
+            gene_text = "Found (+1 Rites)"
+        else:
+            gene_text = "None"
 
 embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
@@ -729,10 +729,10 @@ async def stratagem_report(interaction: discord.Interaction,
     embed = discord.Embed(title="⚔️ Stratagem Report", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
-    if gene_seed.value == "Found":
-    gene_text = "Found (+1 Rites)"
-else:
-    gene_text = "None"
+        if gene_seed.value == "Found":
+            gene_text = "Found (+1 Rites)"
+        else:
+            gene_text = "None"
 
 embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
