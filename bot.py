@@ -1001,7 +1001,7 @@ async def on_member_join(member):
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
 if not os.getenv("DICORD_TOKEN"):
-    raise ValueError: ("Missing DISCORD_TOKEN")
+    raise ValueError("Missing DISCORD_TOKEN")
 
 bot.run(os.getenv("DISCORD_TOKEN"))
     
