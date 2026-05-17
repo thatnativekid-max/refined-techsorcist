@@ -11,6 +11,7 @@ import asyncio
 import traceback
 import time 
 from discord.ext import tasks
+import shutil
 
 TOKEN = os.getenv("TOKEN")
 
