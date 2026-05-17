@@ -473,7 +473,10 @@ async def check_relics(member: discord.Member):
 # ==================================================
 # HELPERS
 # ==================================================
-
+async def safe_defer(interaction):
+    if not interaction.response.is_done():
+        await interaction.response.defer()
+        
 def build_members(m1, m2=None, m3=None):
     return [m for m in [m1, m2, m3] if m]
 
@@ -506,8 +509,8 @@ async def add_rites_cmd(interaction: discord.Interaction, member: discord.Member
     if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message("❌ No permission.", ephemeral=True)
 
-    await interaction.response.defer()
-
+    await safe_defer(interaction)
+    
     user = ensure_user(add_rites(member, amount))
 
     rites = user["rites"]
@@ -631,8 +634,8 @@ async def operation_report(
     screenshot4: discord.Attachment = None
 ):
 
-    await interaction.response.defer()
-
+    await safe_defer(interaction)
+    
     base = OPERATION_DIFFICULTY[difficulty.value]
     gene_bonus = 1 if gene_seed.value == "Found" else 0
     total_rites = base + gene_bonus
@@ -714,7 +717,7 @@ async def operation_report(
     screenshot4: discord.Attachment = None
 ):
 
-    await interaction.response.defer()
+    await safe_defer(interaction)
 
     base = STRATAGEM_DIFFICULTY[difficulty.value]
     gene_bonus = 1 if gene_seed.value == "Found" else 0
@@ -792,8 +795,8 @@ async def siege_report(interaction: discord.Interaction,
     screenshot3: discord.Attachment = None,
     screenshot4: discord.Attachment = None
 ):
-    await interaction.response.defer()  # 🔥 FIX
-
+    await safe_defer(interaction)
+    
     rites = (waves.value // 5) * 2
     members = build_members(member1, member2, member3)
     lines = []
@@ -851,8 +854,8 @@ async def pvp_report(
     screenshot3: discord.Attachment = None,
     screenshot4: discord.Attachment = None
 ):
-    await interaction.response.defer()  # 🔥 FIX
-
+    await safe_defer(interaction)
+    
     rites = 3 if victory.value == "Yes" else 0
     members = build_members(member1, member2, member3)
 
@@ -907,7 +910,7 @@ async def exorsuits(
     screenshot3: discord.Attachment = None,
     screenshot4: discord.Attachment = None
 ):
-    await interaction.response.defer()
+    await safe_defer(interaction)
 
     rites = 2 if victory.value == "Yes" else 0
     members = [m for m in [member1, member2, member3, member4] if m]
