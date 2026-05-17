@@ -11,6 +11,11 @@ import asyncio
 import traceback
 import time 
 
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+if not os.getenv("DICORD_TOKEN"):
+    raise ValueError("Missing DISCORD_TOKEN")
+
 DATA_FILE = "data.json"
 
 intents = discord.Intents.default()
@@ -1000,8 +1005,6 @@ async def on_member_join(member):
             f"I am the Techsorcist, keeper of your records.\n\n"
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
-if not os.getenv("DICORD_TOKEN"):
-    raise ValueError("Missing DISCORD_TOKEN")
 
 bot.run(os.getenv("DISCORD_TOKEN"))
     
