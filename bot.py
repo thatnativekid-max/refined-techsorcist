@@ -612,42 +612,34 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 # OPERATION REPORT
 # ==================================================
 
-@bot.tree.command(name="operation_report")
-@app_commands.choices(
-    mission=MISSION_CHOICES,
-    difficulty=OPERATION_DIFFICULTY_CHOICES,
-    gene_seed=GENE_CHOICES
-)
-async def operation_report(interaction: discord.Interaction,
-    mission: app_commands.Choice[str],
-    difficulty: app_commands.Choice[str],
-    gene_seed: app_commands.Choice[str],
-    member1: discord.Member,
-    screenshot1: discord.Attachment,
-    screenshot2: discord.Attachment,
-    member2: discord.Member = None,
-    member3: discord.Member = None,
-    screenshot3: discord.Attachment = None,
-    screenshot4: discord.Attachment = None
-):
+async def operation_report(...):
 
-    await interaction.response.defer() # 🔥 FIX
+    await interaction.response.defer()
 
     base = OPERATION_DIFFICULTY[difficulty.value]
-    difficulty_text = f"{difficulty.value} (+{base}Rites)"
     gene_bonus = 1 if gene_seed.value == "Found" else 0
     total_rites = base + gene_bonus
+
+    data = load_data() # 🔥 LOAD ONCE
+    members_data = data["members"]
 
     members = build_members(member1, member2, member3)
     lines = []
 
     for m in members:
-        user = add_rites(m, total_rites, gene_bonus)
+        uid = str(m.id)
 
-        rites = user["rites"]
-        gene = user["gene"]
+        if uid not in members_data:
+            members_data[uid] = {}
 
-        await update_rank(m, rites)
+        user = ensure_user(members_data[uid])
+
+        user["rites"] += total_rites
+        user["gene"] += gene_bonus
+
+        members_data[uid] = user
+
+        await update_rank(m, user["rites"])
         new_relics = await check_relics(m)
 
         if new_relics:
@@ -655,16 +647,18 @@ async def operation_report(interaction: discord.Interaction,
                 f"🏆 {m.mention} has unlocked relic(s):\n" +
                 "\n".join([f"⚜ {r}" for r in new_relics])
             )
-        lines.append(f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}")
+
+        lines.append(
+            f"{m.mention}\nTotal: {user['rites']}\n{get_progress_text(user['rites'])}"
+        )
+
+    save_data(data) # 🔥 SAVE ONCE
 
     embed = discord.Embed(title="⚔️ Operation Report", color=discord.Color.red())
     embed.add_field(name="Mission", value=mission.value, inline=False)
-    embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
-    if gene_seed.value == "Found":
-        gene_text = "Found (+1 Rites)"
-    else:
-        gene_text = "None"
+    embed.add_field(name="Difficulty", value=f"{difficulty.value} (+{base}Rites)", inline=False)
 
+    gene_text = "Found (+1 Rites)" if gene_seed.value == "Found" else "None"
     embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
@@ -672,6 +666,7 @@ async def operation_report(interaction: discord.Interaction,
     screenshots = [s for s in screenshots if s]
 
     await send_gallery(interaction, embed, screenshots)
+
 
     await interaction.followup.send(
         "The daemons are banished! Your willpower remains strong as steel. "
@@ -700,41 +695,57 @@ async def stratagem_report(interaction: discord.Interaction,
     screenshot3: discord.Attachment = None,
     screenshot4: discord.Attachment = None
 ):
-    await interaction.response.defer()  # 🔥 FIX
+    await interaction.response.defer()
 
     base = STRATAGEM_DIFFICULTY[difficulty.value]
-    difficulty_text = f"{difficulty.value} (+{base}Rites)"
-    gene_bonus = 1 if gene_seed.value == "Found" else 0
-    total_rites = base + gene_bonus
+gene_bonus = 1 if gene_seed.value == "Found" else 0
+total_rites = base + gene_bonus
+
+difficulty_text = f"{difficulty.value} (+{base}Rites)"
+
+    data = load_data()
+    members_data = data["members"]
 
     members = build_members(member1, member2, member3)
     lines = []
 
     for m in members:
-        user = add_rites(m, total_rites, gene_bonus)
+        uid = str(m.id)
 
-        rites = user["rites"]
-        gene = user["gene"]
+        if uid not in members_data:
+            members_data[uid] = {}
 
-        await update_rank(m, rites)
+        user = ensure_user(members_data[uid])
+
+        user["rites"] += total_rites
+        user["gene"] += gene_bonus
+
+        members_data[uid] = user
+
+        await update_rank(m, user["rites"])
         new_relics = await check_relics(m)
 
         if new_relics:
             await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n" +
-                "\n".join([f"⚜ {r}" for r in new_relics])
+                f"🏆 {m.mention} has unlocked relic(s):\n"
+                + "\n".join([f"⚜ {r}" for r in new_relics])
             )
-        lines.append(f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}")
+
+        lines.append(
+            f"{m.mention}\nTotal: {user['rites']}\n{get_progress_text(user['rites'])}"
+        )
+
+    save_data(data)
 
     embed = discord.Embed(title="⚔️ Stratagem Report", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
-    embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
-    if gene_seed.value == "Found":
-        gene_text = "Found (+1 Rites)"
-    else:
-        gene_text = "None"
 
+    difficulty_text = f"{difficulty.value} (+{STRATAGEM_DIFFICULTY[difficulty.value]}Rites)"
+    embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
+
+    gene_text = "Found (+1 Rites)" if gene_seed.value == "Found" else "None"
     embed.add_field(name="Gene Seed", value=gene_text, inline=False)
+
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
     screenshots = [screenshot1, screenshot2, screenshot3, screenshot4]
@@ -747,7 +758,6 @@ async def stratagem_report(interaction: discord.Interaction,
         "[EXORCISM] protocols completed. The warp-taint is removed. "
         "Your wargear is sanctified."
     )
-
 # ==================================================
 # SIEGE REPORT
 # ==================================================
