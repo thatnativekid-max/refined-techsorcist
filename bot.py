@@ -10,8 +10,37 @@ from PIL import Image
 import asyncio
 import traceback
 import time 
+from discord.ext import tasks
+from datetime import date time
 
 TOKEN = os.getenv("TOKEN")
+
+event_active = False
+
+@tasks.loop(hours=1)
+async def monthly_double_rites_event():
+    global event_active
+
+    now = datetime.utcnow()
+    day = now.day
+
+    channel = bot.get_channel(1500521032753217657)
+
+    if 20 <= day <= 23:
+        if not event_active:
+            event_active = True
+            print("🔥 Double Rites Event STARTED")
+
+            if channel:
+                await channel.send("**DOUBLE RITES EVENT HAS BEGUN!** (20th–23th)\nAll Rites rewards are now doubled!")
+
+    else:
+        if event_active:
+            event_active = False
+            print("❌ Double Rites Event ENDED")
+
+            if channel:
+                await channel.send("**DOUBLE RITES EVENT HAS ENDED**\nRewards are back to normal.")
 
 if not TOKEN:
     raise ValueError("Missing TOKEN")
@@ -211,13 +240,16 @@ def add_rites(member: discord.Member, amount: int, gene: int = 0):
 
     user = ensure_user(data["members"][uid])
 
+    if event_active:
+        amount *= 2
+
     user["rites"] += amount
     user["gene"] += gene
 
     data["members"][uid] = user
     save_data(data)
 
-    return ensure_user(user)  # <- ADD THIS
+    return ensure_user(user)
 
 # ==================================================
 # CHALLENGE SYSTEM
@@ -998,6 +1030,8 @@ async def on_ready():
             print("Slash commands synced.")
     except Exception as e:
         print(f"Sync failed: {e}")
+
+    monthly_double_rites_event.start()
 
     print(f"Logged in as {bot.user}")
 
