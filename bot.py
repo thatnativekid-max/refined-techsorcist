@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord import app_commands
 import json
 import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 from threading import Thread
 from io import BytesIO
@@ -1000,5 +999,5 @@ async def on_member_join(member):
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
 
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("DISCORD_TOKEN"))
     
