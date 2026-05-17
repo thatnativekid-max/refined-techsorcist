@@ -12,6 +12,9 @@ import asyncio
 import traceback
 import time 
 
+bot = commands.Bot(command_prefix="!",
+intents=intents)                   
+
 # =========================
 # HELPERS (PUT GRID HERE)
 # =========================
