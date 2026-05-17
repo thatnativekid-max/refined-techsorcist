@@ -45,6 +45,7 @@ if not TOKEN:
     raise ValueError("Missing TOKEN")
 
 DATA_FILE = "data.json"
+BACKUP_FILE = "data_backup.json"
 
 intents = discord.Intents.default()
 intents.members = True
@@ -59,29 +60,40 @@ intents=intents)
 async def make_grid_image(attachments, cols=2):
     images = []
 
-    for att in attachments:
-        data = await asyncio.wait_for(att.read(), timeout=5)
-        img = Image.open(BytesIO(data)).convert("RGB")
-        images.append(img)
+    try:
+        for att in attachments:
+            data = await asyncio.wait_for(att.read(), timeout=5)
 
-    if not images:
+            with Image.open(BytesIO(data)) as img:
+                img = img.convert("RGB")
+                images.append(img.copy()) # copy prevents closed-image error
+
+        if not images:
+            return None
+
+        w, h = images[0].size
+        rows = (len(images) + cols - 1) // cols
+
+        grid = Image.new("RGB", (cols * w, rows * h), (20, 20, 20))
+
+        for i, img in enumerate(images):
+            x = (i % cols) * w
+            y = (i // cols) * h
+            grid.paste(img, (x, y))
+
+        buffer = BytesIO()
+        grid.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        grid.close() # 🔥 close grid image
+        for img in images: # 🔥 close individual images
+            img.close()
+
+        return buffer
+
+    except Exception as e:
+        print(f"Image processing error: {e}")
         return None
-
-    w, h = images[0].size
-    rows = (len(images) + cols - 1) // cols
-
-    grid = Image.new("RGB", (cols * w, rows * h), (20, 20, 20))
-
-    for i, img in enumerate(images):
-        x = (i % cols) * w
-        y = (i // cols) * h
-        grid.paste(img, (x, y))
-
-    buffer = BytesIO()
-    grid.save(buffer, format="PNG")
-    buffer.seek(0)
-
-    return buffer
     
 class GalleryEmbed(discord.Embed):
     def __init__(self, *args, **kwargs):
@@ -215,12 +227,30 @@ def load_data():
     try:
         with open(DATA_FILE, "r") as f:
             return json.load(f)
+
     except json.JSONDecodeError:
+        print("⚠️ Data file corrupted. Attempting backup restore.")
+
+        if os.path.exists(BACKUP_FILE):
+            with open(BACKUP_FILE, "r") as f:
+                return json.load(f)
+
         return {"members": {}}
 
+
 def save_data(data):
-    with open(DATA_FILE, "w") as f:
+    temp_file = "data_temp.json"
+
+    # Create backup first
+    if os.path.exists(DATA_FILE):
+        shutil.copy(DATA_FILE, BACKUP_FILE)
+
+    # Write to temp file
+    with open(temp_file, "w") as f:
         json.dump(data, f, indent=4)
+
+    # Atomic replace (crash-safe)
+    os.replace(temp_file, DATA_FILE)
 
 def ensure_user(user: dict):
     """Guarantees all required fields exist for a user."""
@@ -486,18 +516,21 @@ async def send_gallery(interaction, embed, screenshots):
         await interaction.followup.send(embed=embed)
         return
 
-    # Convert screenshots to discord files
     grid_image = await make_grid_image(screenshots, cols=2)
 
-    # Attach grid
-    file = discord.File(grid_image, filename="grid.png")
+    if not grid_image:
+        await interaction.followup.send(embed=embed)
+        return
 
+    file = discord.File(grid_image, filename="grid.png")
     embed.set_image(url="attachment://grid.png")
 
     await interaction.followup.send(
         embed=embed,
         files=[file]
     )
+
+    grid_image.close() # 🔥 CLOSE BUFFER AFTER SENDING
 
 # ==================================================
 # ADMIN COMMAND
