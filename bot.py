@@ -1000,7 +1000,8 @@ async def on_member_join(member):
             f"I am the Techsorcist, keeper of your records.\n\n"
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
-if not os.getenv("DICORD_TOKEN")
-    raise Value Error ("Missing DISCORD_TOKEN in enviroment variable")
+if not os.getenv("DICORD_TOKEN"):
+    raise Value Error ("Missing DISCORD_TOKEN")
+
 bot.run(os.getenv("DISCORD_TOKEN"))
     
