@@ -665,7 +665,7 @@ async def operation_report(interaction: discord.Interaction,
     else:
         gene_text = "None"
 
-embed.add_field(name="Gene Seed", value=gene_text, inline=False)
+    embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
     screenshots = [screenshot1, screenshot2, screenshot3, screenshot4]
@@ -734,7 +734,7 @@ async def stratagem_report(interaction: discord.Interaction,
     else:
         gene_text = "None"
 
-embed.add_field(name="Gene Seed", value=gene_text, inline=False)
+    embed.add_field(name="Gene Seed", value=gene_text, inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
     screenshots = [screenshot1, screenshot2, screenshot3, screenshot4]
