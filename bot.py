@@ -20,7 +20,7 @@ event_active = False
 async def monthly_double_rites_event():
     global event_active
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     day = now.day
 
     channel = bot.get_channel(1500521032753217657)
