@@ -611,7 +611,12 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 # ==================================================
 # OPERATION REPORT
 # ==================================================
-
+@bot.tree.command(name="operation_report")
+@app_commands.choices(
+    mission=MISSION_CHOICES,
+    difficulty=OPERATION_DIFFICULTY_CHOICES,
+    gene_seed=GENE_CHOICES
+)
 async def operation_report(
     interaction: discord.Interaction,
     mission: app_commands.Choice[str],
