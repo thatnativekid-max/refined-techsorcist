@@ -989,9 +989,16 @@ synced = False
 @bot.event
 async def on_ready():
     global synced
-    if not synced:
-        await bot.tree.sync()
-        synced = True
+    print("Bot is starting on_ready...")
+
+    try:
+        if not synced:
+            await bot.tree.sync()
+            synced = True
+            print("Slash commands synced.")
+    except Exception as e:
+        print(f"Sync failed: {e}")
+
     print(f"Logged in as {bot.user}")
 
 @bot.event
