@@ -717,7 +717,7 @@ difficulty_text = f"{difficulty.value} (+{base}Rites)"
 
 data = load_data()
 members_data = data["members"]
-    members = build_members(member1, member2, member3)
+members = build_members(member1, member2, member3)
     lines = []
 
     for m in members:
