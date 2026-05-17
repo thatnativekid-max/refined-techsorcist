@@ -5,12 +5,10 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-from flask import Flask
 from threading import Thread
 from io import BytesIO
 from PIL import Image
 import asyncio
-from keep_alive import keep_alive
 import traceback
 import time 
 
@@ -54,34 +52,6 @@ class GalleryEmbed(discord.Embed):
         if self._gallery_images:
             d['images'] = self._gallery_images
         return d
-
-# ==============================
-# KEEP ALIVE SERVER
-# ==============================
-
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "Bot is alive"
-
-def run():
-    app.run(host="0.0.0.0", port=8080)
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-    
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
-
-intents = discord.Intents.default()
-intents.members = True
-intents.message_content = True
-
-bot = commands.Bot(command_prefix="!", intents=intents)
-
-DATA_FILE = "data.json"
 
 # ==================================================
 # RANK SYSTEM
@@ -1023,12 +993,5 @@ async def on_member_join(member):
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
 
-keep_alive()
-
-while True:
-    try:
-        bot.run(TOKEN)
-    except Exception:
-        print("Bot crashed — restarting in 5 seconds")
-        traceback.print_exc()
-        time.sleep(5)
+bot.run(os.getenv("TOKEN")
+    
