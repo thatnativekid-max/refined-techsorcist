@@ -689,13 +689,13 @@ async def operation_report(
 # STRATAGEM REPORT
 # ==================================================
 
-@bot.tree.command(name="stratagem_report")
+@bot.tree.command(name="operation_report")
 @app_commands.choices(
     mission=MISSION_CHOICES,
-    difficulty=STRATAGEM_DIFFICULTY_CHOICES,
+    difficulty=OPERATION_DIFFICULTY_CHOICES,
     gene_seed=GENE_CHOICES
 )
-async def stratagem_report(
+async def operation_report(
     interaction: discord.Interaction,
     mission: app_commands.Choice[str],
     difficulty: app_commands.Choice[str],
