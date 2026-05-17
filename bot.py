@@ -695,7 +695,8 @@ async def operation_report(
     difficulty=STRATAGEM_DIFFICULTY_CHOICES,
     gene_seed=GENE_CHOICES
 )
-async def stratagem_report(interaction: discord.Interaction,
+async def stratagem_report(
+    interaction: discord.Interaction,
     mission: app_commands.Choice[str],
     difficulty: app_commands.Choice[str],
     gene_seed: app_commands.Choice[str],
@@ -707,51 +708,52 @@ async def stratagem_report(interaction: discord.Interaction,
     screenshot3: discord.Attachment = None,
     screenshot4: discord.Attachment = None
 ):
+
     await interaction.response.defer()
 
     base = STRATAGEM_DIFFICULTY[difficulty.value]
-gene_bonus = 1 if gene_seed.value == "Found" else 0
-total_rites = base + gene_bonus
+    gene_bonus = 1 if gene_seed.value == "Found" else 0
+    total_rites = base + gene_bonus
 
-difficulty_text = f"{difficulty.value} (+{base}Rites)"
-data = load_data()
-members_data = data["members"]
-members = build_members(member1, member2, member3)
+    difficulty_text = f"{difficulty.value} (+{base}Rites)"
 
-lines = [] # ✅ aligned properly
+    data = load_data()
+    members_data = data["members"]
 
-for m in members:
-    uid = str(m.id)
+    members = build_members(member1, member2, member3)
 
-    if uid not in members_data:
-        members_data[uid] = {}
+    lines = []
 
-    user = ensure_user(members_data[uid])
+    for m in members:
+        uid = str(m.id)
 
-    user["rites"] += total_rites
-    user["gene"] += gene_bonus
+        if uid not in members_data:
+            members_data[uid] = {}
 
-    members_data[uid] = user
+        user = ensure_user(members_data[uid])
 
-    await update_rank(m, user["rites"])
-    new_relics = await check_relics(m)
+        user["rites"] += total_rites
+        user["gene"] += gene_bonus
 
-    if new_relics:
-        await interaction.channel.send(
-            f"🏆 {m.mention} has unlocked relic(s):\n"
-            + "\n".join([f"⚜ {r}" for r in new_relics])
+        members_data[uid] = user
+
+        await update_rank(m, user["rites"])
+        new_relics = await check_relics(m)
+
+        if new_relics:
+            await interaction.channel.send(
+                f"🏆 {m.mention} has unlocked relic(s):\n"
+                + "\n".join([f"⚜ {r}" for r in new_relics])
+            )
+
+        lines.append(
+            f"{m.mention}\nTotal: {user['rites']}\n{get_progress_text(user['rites'])}"
         )
 
-    lines.append(
-        f"{m.mention}\nTotal: {user['rites']}\n{get_progress_text(user['rites'])}"
-    )
-
-save_data(data)
+    save_data(data)
 
     embed = discord.Embed(title="⚔️ Stratagem Report", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
-
-    difficulty_text = f"{difficulty.value} (+{STRATAGEM_DIFFICULTY[difficulty.value]}Rites)"
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
 
     gene_text = "Found (+1 Rites)" if gene_seed.value == "Found" else "None"
