@@ -612,7 +612,19 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 # OPERATION REPORT
 # ==================================================
 
-async def operation_report(...):
+async def operation_report(
+    interaction: discord.Interaction,
+    mission: app_commands.Choice[str],
+    difficulty: app_commands.Choice[str],
+    gene_seed: app_commands.Choice[str],
+    member1: discord.Member,
+    screenshot1: discord.Attachment,
+    screenshot2: discord.Attachment,
+    member2: discord.Member = None,
+    member3: discord.Member = None,
+    screenshot3: discord.Attachment = None,
+    screenshot4: discord.Attachment = None
+):
 
     await interaction.response.defer()
 
