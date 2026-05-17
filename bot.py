@@ -11,10 +11,10 @@ import asyncio
 import traceback
 import time 
 
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("TOKEN")
 
-if not os.getenv("DICORD_TOKEN"):
-    raise ValueError("Missing DISCORD_TOKEN")
+if not TOKEN:
+    raise ValueError("Missing TOKEN")
 
 DATA_FILE = "data.json"
 
@@ -1006,5 +1006,5 @@ async def on_member_join(member):
             f"Proceed to the Halls of Tempering to begin your trials, {member.mention}."
         )
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run(os.getenv("TOKEN"))
     
