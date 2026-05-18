@@ -137,6 +137,9 @@ def techsorcist_records_only():
 # =========================
 async def make_grid_image(attachments, cols=2):
     try:
+        MAX_IMAGE_SIZE = 900 # max width/height per image
+        MAX_TOTAL_PIXELS = 8_000_000 # hard safety cap
+
         images = []
 
         for att in attachments:
@@ -144,6 +147,10 @@ async def make_grid_image(attachments, cols=2):
 
             with Image.open(BytesIO(data)) as img:
                 img = img.convert("RGB")
+
+                # 🔥 Resize safely
+                img.thumbnail((MAX_IMAGE_SIZE, MAX_IMAGE_SIZE))
+
                 images.append(img.copy())
 
         if not images:
@@ -152,7 +159,29 @@ async def make_grid_image(attachments, cols=2):
         w, h = images[0].size
         rows = (len(images) + cols - 1) // cols
 
-        grid = Image.new("RGB", (cols * w, rows * h), (20, 20, 20))
+        total_width = cols * w
+        total_height = rows * h
+
+        # 🔥 Hard crash prevention
+        if total_width * total_height > MAX_TOTAL_PIXELS:
+            print("Grid too large — resizing further")
+
+            scale = (MAX_TOTAL_PIXELS / (total_width * total_height)) ** 0.5
+
+            new_w = int(w * scale)
+            new_h = int(h * scale)
+
+            resized = []
+            for img in images:
+                img = img.resize((new_w, new_h))
+                resized.append(img)
+
+            images = resized
+            w, h = new_w, new_h
+            total_width = cols * w
+            total_height = rows * h
+
+        grid = Image.new("RGB", (total_width, total_height), (20, 20, 20))
 
         for i, img in enumerate(images):
             x = (i % cols) * w
@@ -160,7 +189,7 @@ async def make_grid_image(attachments, cols=2):
             grid.paste(img, (x, y))
 
         buffer = BytesIO()
-        grid.save(buffer, format="PNG")
+        grid.save(buffer, format="PNG", optimize=True)
         buffer.seek(0)
 
         grid.close()
