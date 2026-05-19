@@ -1168,7 +1168,6 @@ async def exorsuits(
 # READY
 # ==================================================
 @bot.tree.command(name="event_request", description="Submit an event idea for approval")
-@events_channel_only()
 @app_commands.describe(details="Describe your event idea in detail")
 async def event_request(interaction: discord.Interaction, details: str):
 
