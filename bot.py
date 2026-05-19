@@ -748,10 +748,17 @@ async def add_rites_cmd(interaction: discord.Interaction, member: discord.Member
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
+    # Ensure user exists
+    cursor.execute("""
+        INSERT OR IGNORE INTO members (user_id)
+        VALUES (?)
+    """, (str(member.id),))
+
+    # Now update
     cursor.execute("""
         UPDATE members
         SET rites = rites + ?
-        WHERE user_id=?
+        WHERE user_id = ?
     """, (amount, str(member.id)))
 
     conn.commit()
