@@ -1168,6 +1168,7 @@ async def exorsuits(
 # READY
 # ==================================================
 @bot.tree.command(name="event_request", description="Submit an event idea for approval")
+@events_channel_only()
 @app_commands.describe(details="Describe your event idea in detail")
 async def event_request(interaction: discord.Interaction, details: str):
 
@@ -1305,9 +1306,6 @@ async def on_ready():
         event_lock = asyncio.Lock()
 
     print(f"Logged in as {bot.user}")
-    
-    await bot.tree.sync()
-    print("FORCED SYNC DONE")
 
     if not monthly_double_rites_event.is_running():
         monthly_double_rites_event.start()
