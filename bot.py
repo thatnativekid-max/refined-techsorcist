@@ -1294,8 +1294,32 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
 synced = False
 
-await bot.tree.sync()
-print("FORCED SYNC DONE")
+@bot.event
+async def on_ready():
+    global db_lock, event_lock
+
+    if db_lock is None:
+        db_lock = asyncio.Lock()
+
+    if event_lock is None:
+        event_lock = asyncio.Lock()
+
+    print(f"Logged in as {bot.user}")
+    
+    await bot.tree.sync()
+    print("FORCED SYNC DONE")
+
+    if not monthly_double_rites_event.is_running():
+        monthly_double_rites_event.start()
+
+    try:
+        if not synced:
+            await bot.tree.sync()
+            synced = True
+            print("Slash commands synced.")
+    except Exception as e:
+        print(f"Sync failed: {e}")
+
 
 @bot.event
 async def on_member_join(member):
