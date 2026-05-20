@@ -320,9 +320,9 @@ MISSION_CHOICES = [app_commands.Choice(name=m, value=m) for m in MISSION_LIST]
 # DATA SYSTEM
 # ==================================================
 def safe_split(value):
-    if not value:
+    if not value or value in ("[]", "None"):
         return []
-    return value.split(",") if value != "[]" else []
+    return [x for x in value.split(",") if x]
     
 def get_user(uid: int | str):
     uid = str(uid)
@@ -574,13 +574,13 @@ async def update_rank_cached(member: discord.Member, user: dict):
         if new_rank not in user["completed_challenges"]:
             user["completed_challenges"].append(new_rank)
 
+    save_user(member.id, user)
     # SINGLE DB WRITE ONLY
     conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
 
     conn.commit()
     conn.close()
-    save_user(member.id, user)
     backup_database()
     
 async def check_relics_cached(member: discord.Member, user: dict):
@@ -630,6 +630,7 @@ def save_user(user_id, user):
         str(user_id)
     ))
 
+    save_user(member.id, user)
     conn.commit()
     conn.close()
     backup_database()
@@ -750,50 +751,39 @@ async def edit_rites(
 
 @bot.tree.command(name="approve_challenge", description="Officer approval for challenge completion")
 @app_commands.choices(challenge=CHALLENGE_CHOICES)
-async def approve_challenge(
-    interaction: discord.Interaction,
-    member: discord.Member,
-    challenge: app_commands.Choice[str]
-):
-    # Permission check
+async def approve_challenge(interaction: discord.Interaction, member: discord.Member, challenge: app_commands.Choice[str]):
+
     if not interaction.user.guild_permissions.manage_roles:
-        return await interaction.response.send_message(
-            "❌ You do not have permission.",
-            ephemeral=True
-        )
+        return await interaction.response.send_message("❌ You do not have permission.", ephemeral=True)
 
     await interaction.response.defer()
 
-    uid = str(member.id)
+    challenge_name = challenge.value
     user = get_user(member.id)
 
-    challenge_name = challenge.value
-
-    # Already completed check
     if challenge_name in user["completed_challenges"]:
         return await interaction.followup.send("Already completed.")
 
-    # Add challenge
+    # ✅ update memory
     user["completed_challenges"].append(challenge_name)
 
-    # Give role if mapped
+    # optional dedupe safety
+    user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
+
+    # role reward
     role_name = CHALLENGE_TO_RANK.get(challenge_name)
     if role_name:
         role = discord.utils.get(member.guild.roles, name=role_name)
         if role:
             await member.add_roles(role)
 
-    # Save to SQLite
-    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
-    cursor = conn.cursor()
-
-    conn.commit()
-    conn.close()
-    backup_database()
+    # ❗ IMPORTANT: SAVE TO DB (this was missing)
+    save_user(member.id, user)
 
     await interaction.followup.send(
         f"✅ {member.mention} has completed **{challenge_name}** and been approved."
     )
+
 # ==================================================
 # PLAYER CARD
 # ==================================================
