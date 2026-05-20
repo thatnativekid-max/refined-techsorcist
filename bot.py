@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import sqlite3
-import json
 import os
 from datetime import datetime, timezone
 from threading import Thread
@@ -17,20 +16,13 @@ import shutil
 db_lock = asyncio.Lock()
 event_lock = asyncio.Lock()
 
-db_lock = None
-event_lock = None
-
 TOKEN = os.getenv("TOKEN")
 
 DB_FILE = "/data/database.db" 
-DATA_FILE = "data.json" 
-BACKUP_FILE = "data_backup.json"
 
 BATTLE_REPORT_CHANNEL_ID = 1500525099655102525
 TECHSORCIST_RECORDS_CHANNEL_ID = 1505702243666497688
 EVENTS_CHANNEL_ID = 1506016793691426936
-
-event_active = False
 
 intents = discord.Intents.default() 
 intents.members = True 
@@ -38,25 +30,9 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-
-@tasks.loop(hours=1)
-async def monthly_double_rites_event():
-    global event_active
-
+def is_double_rites_event():
     now = datetime.now(timezone.utc)
-    day = now.day
-
-    channel = bot.get_channel(1500521032753217657)
-
-    async with event_lock:
-        if 20 <= day <= 23:
-            if not event_active:
-                event_active = True
-                print("🔥 Double Rites Event STARTED 🔥")
-        else:
-            if event_active:
-                event_active = False
-                print("❌ Double Rites Event ENDED ❌")
+    return 20 <= now.day <= 23
   
 def init_db(): 
     
@@ -79,35 +55,6 @@ def init_db():
     conn.close()
 
 init_db()
-
-def migrate_json():
-    if not os.path.exists("data.json"):
-        return
-
-    with open("data.json", "r") as f:
-        data = json.load(f)
-
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-
-    for uid, user in data.get("members", {}).items():
-        cursor.execute("""
-            INSERT OR IGNORE INTO members (user_id, rites, gene, relics, completed_challenges)
-            VALUES (?, ?, ?, ?, ?)
-        """, (
-            uid,
-            user.get("rites", 0),
-            user.get("gene", 0),
-            json.dumps(user.get("relics", [])),
-            json.dumps(user.get("completed_challenges", []))
-        ))
-
-    conn.commit()
-    conn.close()
-
-    print("✅ Migration complete")
-
-migrate_json()
 
 def get_member_days(member: discord.Member):
     if not member.joined_at:
@@ -372,22 +319,25 @@ MISSION_CHOICES = [app_commands.Choice(name=m, value=m) for m in MISSION_LIST]
 # ==================================================
 # DATA SYSTEM
 # ==================================================
-
+def safe_split(value):
+    if not value:
+        return []
+    return value.split(",") if value != "[]" else []
+    
 def get_user(uid: int | str):
     uid = str(uid)
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT rites, gene, relics, completed_challenges
         FROM members
         WHERE user_id = ?
-    """, (str(uid),))
+    """, (uid,))
 
     row = cursor.fetchone()
     conn.close()
 
-    # If user doesn't exist yet
     if not row:
         return {
             "rites": 0,
@@ -399,60 +349,27 @@ def get_user(uid: int | str):
     return {
         "rites": row[0],
         "gene": row[1],
-        "relics": json.loads(row[2]),
-        "completed_challenges": json.loads(row[3])
+        "relics": safe_split(row[2]),
+        "completed_challenges": safe_split(row[3])
     }
 
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return {"members": {}}
+def backup_database():
+    backup_path = "/data/database_backup.db"
 
-    try:
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-
-    except json.JSONDecodeError:
-        print("⚠️ Data file corrupted. Attempting backup restore.")
-
-        if os.path.exists(BACKUP_FILE):
-            with open(BACKUP_FILE, "r") as f:
-                return json.load(f)
-
-        return {"members": {}}
-
-
-def save_data(data):
-    temp_file = "data_temp.json"
-
-    # Create backup first
-    if os.path.exists(DATA_FILE):
-        shutil.copy(DATA_FILE, BACKUP_FILE)
-
-    # Write to temp file
-    with open(temp_file, "w") as f:
-        json.dump(data, f, indent=4)
-
-    # Atomic replace (crash-safe)
-    os.replace(temp_file, DATA_FILE)
-
-def ensure_user(user: dict):
-    """Guarantees all required fields exist for a user."""
-    user.setdefault("rites", 0)
-    user.setdefault("gene", 0)
-    user.setdefault("relics", [])
-    user.setdefault("completed_challenges", [])
-    return user
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+    backup = sqlite3.connect(backup_path)
+    conn.backup(backup)
+    backup.close()
+    conn.close()
 
 async def add_rites(member, amount, gene_bonus=0):
-    global event_active
-
-    if event_active:
-        amount *= 2
+    if is_double_rites_event():
+        amount *=2
 
     uid = str(member.id)
 
     async with db_lock:
-        conn = sqlite3.connect(DB_FILE)
+        conn = sqlite3.connect(DB_FILE, check_same_thread=False)
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -478,11 +395,9 @@ async def add_rites(member, amount, gene_bonus=0):
         conn.close()
 
     return {
-        "rites": row[0],
-        "gene": row[1],
-        "relics": json.loads(row[2]),
-        "completed_challenges": json.loads(row[3])
-    }
+        "relics": row[2].split(",") if row[2] else [],
+        "completed_challenges": row[3].split(",") if row[3] else []
+            }
 
 
 # ==================================================
@@ -661,17 +576,13 @@ async def update_rank_cached(member: discord.Member, user: dict):
             user["completed_challenges"].append(new_rank)
 
     # SINGLE DB WRITE ONLY
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
-
-    cursor.execute("""
-        UPDATE members
-        SET completed_challenges = ?
-        WHERE user_id = ?
-    """, (json.dumps(user["completed_challenges"]), uid))
 
     conn.commit()
     conn.close()
+    save_user(member.id, user)
+    backup_database()
     
 async def check_relics_cached(member: discord.Member, user: dict):
     uid = str(member.id)
@@ -687,19 +598,40 @@ async def check_relics_cached(member: discord.Member, user: dict):
             unlocked.append(relic)
 
     if unlocked:
-        conn = sqlite3.connect(DB_FILE)
+        conn = sqlite3.connect(DB_FILE, check_same_thread=False)
         cursor = conn.cursor()
-
-        cursor.execute("""
-            UPDATE members
-            SET relics = ?
-            WHERE user_id = ?
-        """, (json.dumps(user["relics"]), uid))
 
         conn.commit()
         conn.close()
-
+        save_user(member.id, user)
+        backup_database()
+        
     return unlocked
+
+def safe_join(value):
+    if not value:
+        return ""
+    return ",".join(value)
+
+def save_user(user_id, user):
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE members
+        SET rites = ?, gene = ?, relics = ?, completed_challenges = ?
+        WHERE user_id = ?
+    """, (
+        user["rites"],
+        user["gene"],
+        safe_join(user["relics"]),
+        safe_join(user["completed_challenges"]),
+        str(user_id)
+    ))
+
+    conn.commit()
+    conn.close()
+    backup_database()
 
 # ==================================================
 # HELPERS
@@ -734,18 +666,49 @@ async def send_gallery(interaction, embed, screenshots, content=None):
 
     grid_image.close()
 
+async def process_progress(member, rites, gene_bonus):
+    user = await add_rites(member, rites, gene_bonus)
+
+    new_relics = await check_relics_cached(member=member, user=user)
+    await update_rank_cached(member=member, user=user)
+
+    user["new_relics"] = new_relics
+
+    save_user(member.id, user)
+    
+    return user
+
+async def announce_relics(interaction, member, user):
+    for r in user.get("new_relics", []):
+        await interaction.channel.send(
+            f"🏆 {member.mention} has unlocked relic: ⚜ {r}"
+        )
+    
 # ==================================================
 # ADMIN COMMAND
 # ==================================================
-
-@bot.tree.command(name="add_rites")
-async def add_rites_cmd(interaction: discord.Interaction, member: discord.Member, amount: int, reason: str = "None"):
+@bot.tree.command(name="edit_rites", description="Add or subtract rites from a member")
+async def edit_rites(
+    interaction: discord.Interaction,
+    member: discord.Member,
+    amount: int,
+    mode: str,  # "add" or "subtract"
+    reason: str = "None"
+):
     if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message("❌ No permission.", ephemeral=True)
 
     await safe_defer(interaction)
 
-    conn = sqlite3.connect(DB_FILE)
+    if mode not in ["add", "subtract"]:
+        return await interaction.followup.send("❌ Mode must be `add` or `subtract`.")
+
+    if amount <= 0:
+        return await interaction.followup.send("❌ Amount must be greater than 0.")
+
+    final_amount = amount if mode == "add" else -amount
+
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
 
     # Ensure user exists
@@ -754,28 +717,35 @@ async def add_rites_cmd(interaction: discord.Interaction, member: discord.Member
         VALUES (?)
     """, (str(member.id),))
 
-    # Now update
+    # Apply change
     cursor.execute("""
         UPDATE members
         SET rites = rites + ?
         WHERE user_id = ?
-    """, (amount, str(member.id)))
+    """, (final_amount, str(member.id)))
 
     conn.commit()
     conn.close()
+    backup_database()
 
     user = get_user(member.id)
 
     await update_rank_cached(member, user)
 
-    embed = discord.Embed(title="🛠️ Admin Update", color=discord.Color.orange())
+    embed = discord.Embed(
+        title="🛠️ Rites Edited",
+        color=discord.Color.orange()
+    )
+
     embed.add_field(name="Member", value=member.mention, inline=False)
-    embed.add_field(name="Added", value=amount, inline=False)
-    embed.add_field(name="Total Rites", value=user["rites"], inline=False)
+    embed.add_field(name="Mode", value=mode, inline=False)
+    embed.add_field(name="Changed By", value=final_amount, inline=False)
+    embed.add_field(name="New Total Rites", value=user["rites"], inline=False)
     embed.add_field(name="Gene Seeds", value=user["gene"], inline=False)
     embed.add_field(name="Reason", value=reason, inline=False)
 
     await interaction.followup.send(embed=embed)
+
 
 @bot.tree.command(name="approve_challenge", description="Officer approval for challenge completion")
 @app_commands.choices(challenge=CHALLENGE_CHOICES)
@@ -813,20 +783,12 @@ async def approve_challenge(
             await member.add_roles(role)
 
     # Save to SQLite
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
-
-    cursor.execute("""
-        UPDATE members
-        SET completed_challenges = ?
-        WHERE user_id = ?
-    """, (
-        json.dumps(user["completed_challenges"]),
-        uid
-    ))
 
     conn.commit()
     conn.close()
+    backup_database()
 
     await interaction.followup.send(
         f"✅ {member.mention} has completed **{challenge_name}** and been approved."
@@ -899,24 +861,17 @@ async def operation_report(
     
     base = OPERATION_DIFFICULTY[difficulty.value]
     gene_bonus = 1 if gene_seed.value == "Found" else 0
-    total_rites = (base + gene_bonus) * (2 if event_active else 1)
+    total_rites = (base + gene_bonus) 
 
     members = build_members(member1, member2, member3)
     lines = []
 
     for m in members:
-        user = await add_rites(m, total_rites, gene_bonus)
+        user = await process_progress(m, total_rites, gene_bonus)
         rites = user["rites"]
         gene = user["gene"]
 
-        await update_rank_cached(member=m, user=user)
-        new_relics = await check_relics_cached(member=m, user=user)
-
-        if new_relics:
-            await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n"
-                + "\n".join([f"⚜ {r}" for r in new_relics])
-            )
+        await announce_relics(interaction, m, user)
 
         lines.append(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
@@ -967,7 +922,7 @@ async def stratagem_report(
 
     base = STRATAGEM_DIFFICULTY[difficulty.value]
     gene_bonus = 1 if gene_seed.value == "Found" else 0
-    total_rites = (base + gene_bonus) * (2 if event_active else 1)
+    total_rites = (base + gene_bonus) 
 
     difficulty_text = f"{difficulty.value} (+{base} Rites)"
 
@@ -976,18 +931,11 @@ async def stratagem_report(
     lines = []
 
     for m in members:
-        user = await add_rites(m, total_rites, gene_bonus)
+        user = await process_progress(m, total_rites, gene_bonus)
         rites = user["rites"]
         gene = user["gene"]
 
-        await update_rank_cached(member=m, user=user)
-        new_relics = await check_relics_cached(member=m, user=user)
-
-        if new_relics:
-            await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n"
-                + "\n".join([f"⚜ {r}" for r in new_relics])
-                )
+        await announce_relics(interaction, m, user)
 
         lines.append(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
@@ -1029,22 +977,17 @@ async def siege_report(interaction: discord.Interaction,
 ):
     await safe_defer(interaction)
     
-    rites = (waves.value // 5) * 2
+    gene_bonus = 0
+    total_rites = (waves.value // 5) * 2
     members = build_members(member1, member2, member3)
     lines = []
 
     for m in members:
-        user = await add_rites(m, rites, 0)
+        user = await process_progress(m, total_rites, gene_bonus)
         total = user["rites"]
 
-        await update_rank_cached(member=m, user=user)
-        new_relics = await check_relics_cached(member=m, user=user)
-
-        if new_relics:
-            await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n" +
-                "\n".join([f"⚜ {r}" for r in new_relics])
-            )
+        await announce_relics(interaction, m, user)
+        
         lines.append(f"{m.mention}\nTotal: {total}\n{get_progress_text(total)}")
 
     embed = discord.Embed(title="⚔️ Siege Report", color=discord.Color.blurple())
@@ -1069,7 +1012,7 @@ async def siege_report(interaction: discord.Interaction,
 @battle_reports_only()
 @app_commands.choices(victory=VICTORY_CHOICES)
 @app_commands.describe(
-    mode="PvP mode (e.g. Arena, Siege, Skirmish)"
+    mode="PvP mode (e.g. Annihilation, Sieze Ground, C&C)"
 )
 async def pvp_report(
     interaction: discord.Interaction,
@@ -1086,6 +1029,8 @@ async def pvp_report(
     await safe_defer(interaction)
     
     rites = 3 if victory.value == "Yes" else 0
+    gene_bonus = 0
+    total_rites = rites
     members = build_members(member1, member2, member3)
 
     embed = discord.Embed(title="⚔️ PvP Report", color=discord.Color.green())
@@ -1093,18 +1038,12 @@ async def pvp_report(
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
     for m in members:
-        user = await add_rites(m, rites, 0)
+        user = await process_progress(m, total_rites, gene_bonus)
 
         total = user["rites"]
 
-        await update_rank_cached(member=m, user=user)
-        new_relics = await check_relics_cached(member=m, user=user)
-
-        if new_relics:
-            await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n" +
-                "\n".join([f"⚜ {r}" for r in new_relics])
-            )
+        await announce_relics(interaction, m, user)
+        
         embed.add_field(
             name=m.display_name,
             value=f"+{rites} Rites\nTotal: {total}\n{get_progress_text(total)}",
@@ -1140,24 +1079,20 @@ async def exorsuits(
     await safe_defer(interaction)
 
     rites = 2 if victory.value == "Yes" else 0
+    gene_bonus = 0
+    total_rites = rites
     members = [m for m in [member1, member2, member3, member4] if m]
 
     embed = discord.Embed(title="⚔️ Exorsuits Report", color=discord.Color.teal())
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
     for m in members:
-        user = await add_rites(m, rites, 0)
+        user = await process_progress(m, total_rites, gene_bonus)
 
         total = user["rites"]
 
-        await update_rank_cached(member=m, user=user)
-        new_relics = await check_relics_cached(member=m, user=user)
-
-        if new_relics:
-            await interaction.channel.send(
-                f"🏆 {m.mention} has unlocked relic(s):\n" +
-                "\n".join([f"⚜ {r}" for r in new_relics])
-            )
+        await announce_relics(interaction, m, user)
+        
         embed.add_field(
             name=m.display_name,
             value=f"+{rites} Rites\nTotal: {total}\n{get_progress_text(total)}",
@@ -1300,8 +1235,6 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
     await interaction.response.send_message(embed=embed)
 
-synced = False
-
 @bot.event
 async def on_ready():
     global db_lock, event_lock
@@ -1314,14 +1247,13 @@ async def on_ready():
 
     print(f"Logged in as {bot.user}")
 
-    if not monthly_double_rites_event.is_running():
-        monthly_double_rites_event.start()
-
     try:
-        if not synced:
-            await bot.tree.sync()
-            synced = True
-            print("Slash commands synced.")
+        if getattr(bot, "synced", False):
+            return
+
+        await bot.tree.sync()
+        bot.synced = True
+        print("Slash commands synced.")
     except Exception as e:
         print(f"Sync failed: {e}")
 
