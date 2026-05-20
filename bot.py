@@ -834,7 +834,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     f"✠ **++SERVICE RECORD++** ✠\n"
     f"⫘⫘⫘⫘⫘⫘⫘⫘⫘\n"
     f"**Designation:** {member.display_name}\n"
-    f"**Rank:** ✠ **{rank.upper()}** ✠\n"
+    f"**Rank:** ✠ *{rank.upper()}* ✠\n"
     f"**Years in Service:** {days} years\n"
     "\n"
     f"☠ **++COMBAT LOG++** ☠\n"
