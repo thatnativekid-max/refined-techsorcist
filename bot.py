@@ -810,8 +810,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
         if rank_name in completed:
             emoji_display += CHALLENGES[rank_name]["emoji"] + " "
 
-    rank_display = f"**{rank}**"
-
+    rank_display = f"+{rank}+"
     if emoji_display:
         rank_display += f"\n\n{emoji_display.strip()}"
 
