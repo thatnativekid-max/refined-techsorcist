@@ -230,15 +230,15 @@ RANKS = {
 # ==================================================
 
 RELICS = {
-    "Hellslayer": {"gene": 45, "rites": 150},
-    "Serpent Staff of Sabazius": {"gene": 65, "rites": 150},
-    "Cessation": {"gene": 75, "rites": 420},
-    "Liber Exorcismus": {"gene": 85, "rites": 420},
-    "Expulsiaris": {"gene": 90, "rites": 600},
-    "Silent Cry": {"gene": 100, "rites": 750},
-    "Exile Plate": {"gene": 120, "rites": 900},
-    "Voidbane": {"gene": 135, "rites": 900},
-    "Daemonarchia Claviculus": {"gene": 200, "rites": 1600},
+    "Hellslayer": {"gene": 45, "rites": 200},
+    "Serpent Staff of Sabazius": {"gene": 65, "rites": 250},
+    "Cessation": {"gene": 75, "rites": 300},
+    "Liber Exorcismus": {"gene": 85, "rites": 350},
+    "Expulsiaris": {"gene": 90, "rites": 500},
+    "Silent Cry": {"gene": 100, "rites": 675},
+    "Exile Plate": {"gene": 120, "rites": 825},
+    "Voidbane": {"gene": 135, "rites": 1000},
+    "Daemonarchia Claviculus": {"gene": 200, "rites": 1225},
 }
 
 CHALLENGE_TO_RANK = {
