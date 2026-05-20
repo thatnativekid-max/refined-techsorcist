@@ -823,8 +823,8 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 
     rank_display = f"**{rank}**"
 
-        if emoji_display:
-            rank_display += f"\n\n{emoji_display.strip()}"
+    if emoji_display:
+        rank_display += f"\n\n{emoji_display.strip()}"
 
     embed.add_field(name="Rank", value=rank_display, inline=False)
     embed.add_field(name="Total Rites", value=rites, inline=False)
