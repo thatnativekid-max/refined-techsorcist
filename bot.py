@@ -629,8 +629,7 @@ def save_user(user_id, user):
         safe_join(user["completed_challenges"]),
         str(user_id)
     ))
-
-    save_user(member.id, user)
+    
     conn.commit()
     conn.close()
     backup_database()
