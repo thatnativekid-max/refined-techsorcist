@@ -1208,7 +1208,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
     member = member or interaction.user
 
-    await interaction.respose.defer()
+    await interaction.response.defer()
 
     user = get_user(member.id)
     rites = user["rites"]
