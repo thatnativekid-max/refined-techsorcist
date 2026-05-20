@@ -571,7 +571,7 @@ async def update_rank_cached(member: discord.Member, user: dict):
         await member.add_roles(new_role)
 
     if new_rank in CHALLENGES:
-        if new_rank not in 
+        if new_rank not in
     user["completed_challenges"]:
     
     user["completed_challenges"].append(new_rank)
