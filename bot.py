@@ -1213,60 +1213,51 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
     completed = user.get("completed_challenges", [])
     days = get_member_days(member)
 
+    NAME_WIDTH = 28
+
     dossier = "```ini\n"
     dossier += f"[CHALLENGE DOSSIER - {member.display_name}]\n\n"
-
-    NAME_WIDTH = 34 # adjust this if you want tighter/wider layout
 
     for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
 
         emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
-        auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
 
         # -------------------------
         # STATUS
         # -------------------------
-        status = "LOCKED"
         if challenge_name in completed:
             status = "COMPLETED"
+        else:
+            status = "IN PROGRESS"
 
-        # Dependencies
-        if challenge_name == "Enochian Guard":
-            if "Veteran" not in completed:
-                status = "LOCKED (REQUIRES VETERAN)"
+        # Dependency locks
+        if challenge_name == "Enochian Guard" and "Veteran" not in completed:
+            status = "LOCKED (REQ VETERAN)"
 
-        if challenge_name == "Daemonium Palatinae":
-            if "Enochian Guard" not in completed:
-                status = "LOCKED (REQUIRES ENOCHIAN GUARD)"
-
-        # -------------------------
-        # FORMATTED NAME LINE (ALIGNED)
-        # -------------------------
-        title = f"{emoji} {challenge_name}"
-
-        # truncate if too long (prevents breaking alignment)
-        title = title[:NAME_WIDTH]
-
-        line = title.ljust(NAME_WIDTH)
-
-        dossier += f"{line} [ {status} ]\n"
+        if challenge_name == "Daemonium Palatinae" and "Enochian Guard" not in completed:
+            status = "LOCKED (REQ ENOCHIAN)"
 
         # -------------------------
-        # REQUIREMENTS
+        # HEADER LINE (ALIGNED)
+        # -------------------------
+        title = f"{emoji} {challenge_name}"[:NAME_WIDTH]
+        header = title.ljust(NAME_WIDTH) + status
+
+        dossier += header + "\n"
+
+        # -------------------------
+        # DETAILS (ONLY IF APPLICABLE)
         # -------------------------
         if "rites" in req:
-            dossier += f" - Rites: {rites}/{req['rites']}\n"
+            dossier += f"Rites {rites}/{req['rites']}\n"
 
         if "days" in req:
-            dossier += f" - Days: {days}/{req['days']}\n"
+            dossier += f"Days {days}/{req['days']}\n"
 
         if req.get("approval"):
-            dossier += f" - Officer Approval Required\n"
+            dossier += "Officer Approval Required\n"
 
-        if "special" in req:
-            dossier += f" - NOTE: {req['special']}\n"
-
-        dossier += "\n"
+            dossier += "\n"
 
         dossier += "```"
 
@@ -1277,7 +1268,6 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         )
 
         await interaction.response.send_message(embed=embed)
-
 @bot.event
 async def on_ready():
     global db_lock, event_lock
