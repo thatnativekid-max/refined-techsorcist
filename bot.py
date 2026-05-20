@@ -1214,11 +1214,11 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
     days = get_member_days(member)
 
     dossier = "```ini\n"
-dossier += f"[CHALLENGE DOSSIER - {member.display_name}]\n\n"
+    dossier += f"[CHALLENGE DOSSIER - {member.display_name}]\n\n"
 
-NAME_WIDTH = 34 # adjust this if you want tighter/wider layout
+    NAME_WIDTH = 34 # adjust this if you want tighter/wider layout
 
-for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
+    for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
 
     emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
     auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
