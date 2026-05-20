@@ -231,7 +231,7 @@ RANKS = {
 
 RELICS = {
     "Hellslayer": {"gene": 45, "rites": 150},
-    "Serpent Staff of Sabazius": {"gene": 65, "rites": 125},
+    "Serpent Staff of Sabazius": {"gene": 65, "rites": 150},
     "Cessation": {"gene": 75, "rites": 420},
     "Liber Exorcismus": {"gene": 85, "rites": 420},
     "Expulsiaris": {"gene": 90, "rites": 600},
