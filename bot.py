@@ -571,9 +571,8 @@ async def update_rank_cached(member: discord.Member, user: dict):
         await member.add_roles(new_role)
 
     if new_rank in CHALLENGES:
-        challenge = CHALLENGES[new_rank]
-        if challenge["auto"] and new_rank not in user["completed_challenges"]:
-            user["completed_challenges"].append(new_rank)
+    if new_rank not in user["completed_challenges"]:
+        user["completed_challenges"].append(new_rank)
 
     # SINGLE DB WRITE ONLY
     conn = sqlite3.connect(DB_FILE, check_same_thread=False)
@@ -614,6 +613,8 @@ def safe_join(value):
     return ",".join(value)
 
 def save_user(user_id, user):
+    user["completed_challenges"] = list(set(user["completed_challenges"]))
+    
     conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     cursor = conn.cursor()
 
@@ -820,7 +821,12 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
         if rank_name in completed:
             emoji_display += CHALLENGES[rank_name]["emoji"] + " "
 
-    embed.add_field(name="Rank", value=f"{rank} {emoji_display}", inline=False)
+    rank_display = f"**{rank}**"
+
+    if emoji_display:
+        rank_display += f"\n\n{emoji_display.strip()}"
+
+    embed.add_field(name="Rank", value=rank_display, inline=False)
     embed.add_field(name="Total Rites", value=rites, inline=False)
     embed.add_field(name="Gene Seeds Found", value=gene, inline=False)
     embed.add_field(name="Time in Chapter", value=f"{days} days", inline=False)
