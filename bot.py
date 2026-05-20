@@ -831,7 +831,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     # DOSSIER BLOCK
     # -------------------------
     dossier = (
-    f"✪ **++SERVICE RECORD++** ✪\n"
+    f"☠ **++SERVICE RECORD++** ☠\n"
     f"⫘⫘⫘⫘⫘⫘⫘⫘⫘\n"
     f"**Designation:** {member.display_name}\n"
     f"**Rank:** ✠ *{rank.upper()}* ✠\n"
@@ -852,7 +852,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 )
 
     embed = discord.Embed(
-    title="☠️ ADEPTUS ASTARTES ☠️",
+    title="☠️ ...ADEPTUS ASTARTES... ☠️",
     description=dossier,
     color=discord.Color.dark_red()
 )
