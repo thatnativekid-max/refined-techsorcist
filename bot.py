@@ -694,7 +694,22 @@ async def announce_relics(interaction, member, user):
         await interaction.channel.send(
             f"🏆 {member.mention} has unlocked relic: ⚜ {r}"
         )
-    
+
+def get_next_relic(user):
+    rites = user.get("rites", 0)
+    gene = user.get("gene", 0)
+
+    for relic, req in sorted(RELICS.items(), key=lambda x: x[1]["rites"]):
+        if relic in user.get("relics", []):
+            continue
+
+        remaining = req["rites"] - rites
+        if remaining < 0:
+            remaining = 0
+
+        return relic, req["rites"], remaining
+
+    return None, None, None
 # ==================================================
 # ADMIN COMMAND
 # ==================================================
@@ -827,15 +842,28 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     relic_text = "\n".join(f"• {r}" for r in relics) if relics else "None recorded"
 
     # -------------------------
+    # NEXT RELIC
+    # -------------------------
+    next_relic, relic_req, relic_remaining = get_next_relic(user)
+
+    if next_relic:
+        relic_section = (
+            f"Next Relic: **{next_relic}**\n"
+            f"Rites: {user.get('rites', 0)} / {relic_req}\n"
+            f"Gene Seeds: {user.get('gene', 0)} / {RELICS[next_relic]['gene']}\n"
+        )
+    else:
+        relic_section = "All relics secured."
+    # -------------------------
     # PROGRESS BAR (KEY PART)
     # -------------------------
     next_rank, next_req = get_next_rank(rites)
 
     if next_rank:
         progress_bar_text = progress_bar(rites, next_req)
-        progress_section = f"Next Rank: **{next_rank}**\n{progress_bar_text}"
+        progress_section = f"{relic_section}\nNext Rank: **{next_rank}**\n{progress_bar_text}"
     else:
-        progress_section = "MAX RANK ACHIEVED"
+        progress_section = f"{relic_section}\nMAX RANK ACHIEVED"
 
     # -------------------------
     # DOSSIER BLOCK
