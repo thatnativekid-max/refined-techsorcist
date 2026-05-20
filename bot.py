@@ -1223,8 +1223,6 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
     for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
 
-        emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
-
         # -------------------------
         # STATUS
         # -------------------------
@@ -1233,6 +1231,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         else:
             status = "IN PROGRESS"
 
+        # Dependency locks
         if challenge_name == "Enochian Guard" and "Veteran" not in completed:
             status = "LOCKED (REQ VETERAN)"
 
@@ -1242,25 +1241,26 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         # -------------------------
         # HEADER LINE (ALIGNED)
         # -------------------------
-        title = f"{emoji} {challenge_name}"[:NAME_WIDTH]
+        title = challenge_name[:NAME_WIDTH]
         header = title.ljust(NAME_WIDTH) + status
-
         dossier += header + "\n"
 
         # -------------------------
         # DETAILS
         # -------------------------
         if "rites" in req:
-            dossier += f"Rites {rites}/{req['rites']}\n"
+            dossier += f" Rites {rites}/{req['rites']}\n"
 
         if "days" in req:
-            dossier += f"Days {days}/{req['days']}\n"
+            dossier += f" Days {days}/{req['days']}\n"
 
         if req.get("approval"):
-            dossier += "Officer Approval Required\n"
+            dossier += " Officer Approval Required\n"
 
         dossier += "\n"
 
+    # Footer inside same block
+    dossier += "[CHECK #rank-and-heraldry]\n"
     dossier += "```"
 
     embed = discord.Embed(
