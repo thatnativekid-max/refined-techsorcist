@@ -1220,63 +1220,63 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
     for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
 
-    emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
-    auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
+        emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
+        auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
 
-    # -------------------------
-    # STATUS
-    # -------------------------
-    status = "LOCKED"
-    if challenge_name in completed:
-        status = "COMPLETED"
+        # -------------------------
+        # STATUS
+        # -------------------------
+        status = "LOCKED"
+        if challenge_name in completed:
+            status = "COMPLETED"
 
-    # Dependencies
-    if challenge_name == "Enochian Guard":
-        if "Veteran" not in completed:
-            status = "LOCKED (REQUIRES VETERAN)"
+        # Dependencies
+        if challenge_name == "Enochian Guard":
+            if "Veteran" not in completed:
+                status = "LOCKED (REQUIRES VETERAN)"
 
-    if challenge_name == "Daemonium Palatinae":
-        if "Enochian Guard" not in completed:
-            status = "LOCKED (REQUIRES ENOCHIAN GUARD)"
+        if challenge_name == "Daemonium Palatinae":
+            if "Enochian Guard" not in completed:
+                status = "LOCKED (REQUIRES ENOCHIAN GUARD)"
 
-    # -------------------------
-    # FORMATTED NAME LINE (ALIGNED)
-    # -------------------------
-    title = f"{emoji} {challenge_name}"
+        # -------------------------
+        # FORMATTED NAME LINE (ALIGNED)
+        # -------------------------
+        title = f"{emoji} {challenge_name}"
 
-    # truncate if too long (prevents breaking alignment)
-    title = title[:NAME_WIDTH]
+        # truncate if too long (prevents breaking alignment)
+        title = title[:NAME_WIDTH]
 
-    line = title.ljust(NAME_WIDTH)
+        line = title.ljust(NAME_WIDTH)
 
-    dossier += f"{line} [ {status} ]\n"
+        dossier += f"{line} [ {status} ]\n"
 
-    # -------------------------
-    # REQUIREMENTS
-    # -------------------------
-    if "rites" in req:
-        dossier += f" - Rites: {rites}/{req['rites']}\n"
+        # -------------------------
+        # REQUIREMENTS
+        # -------------------------
+        if "rites" in req:
+            dossier += f" - Rites: {rites}/{req['rites']}\n"
 
-    if "days" in req:
-        dossier += f" - Days: {days}/{req['days']}\n"
+        if "days" in req:
+            dossier += f" - Days: {days}/{req['days']}\n"
 
-    if req.get("approval"):
-        dossier += f" - Officer Approval Required\n"
+        if req.get("approval"):
+            dossier += f" - Officer Approval Required\n"
 
-    if "special" in req:
-        dossier += f" - NOTE: {req['special']}\n"
+        if "special" in req:
+            dossier += f" - NOTE: {req['special']}\n"
 
-    dossier += "\n"
+        dossier += "\n"
 
-    dossier += "```"
+        dossier += "```"
 
-    embed = discord.Embed(
-        title="📜 Challenge Progression Dossier",
-        description=dossier,
-        color=discord.Color.dark_gold()
-    )
+        embed = discord.Embed(
+            title="📜 Challenge Progression Dossier",
+            description=dossier,
+            color=discord.Color.dark_gold()
+        )
 
-    await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 @bot.event
 async def on_ready():
