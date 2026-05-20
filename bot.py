@@ -490,22 +490,22 @@ CHALLENGE_REQUIREMENTS = {
 }
 
 CHALLENGES = {
-    "Scout": {"emoji": "🔥", "auto": True},
-    "Battle Brother": {"emoji": "🪖", "auto": True},
-    "Brother-Initiate": {"emoji": "🕯️", "auto": False},
-    "Lexicanum": {"emoji": "📚", "auto": False},
-    "Judiciar": {"emoji": "💀", "auto": False},
-    "Tech Adept": {"emoji": "🤖", "auto": False},
+    "Scout": {"emoji": "<:11_12th_co:1499186125611208764> ", "auto": True},
+    "Battle Brother": {"emoji": "<:10th_co:1499184291878277180> ", "auto": True},
+    "Brother-Initiate": {"emoji": "<:3rd_co:1499190609271849001> ", "auto": False},
+    "Lexicanum": {"emoji": "📖", "auto": False},
+    "Judiciar": {"emoji": "<:daemonium_palatinae:1499184311025275064> ", "auto": False},
+    "Tech Adept": {"emoji": "⚙️", "auto": False},
     "Helix Adept": {"emoji": "⛑️", "auto": False},
-    "Bladeguard Veteran": {"emoji": "⚔️", "auto": False},
-    "Enochian Guard": {"emoji": "⛓️", "auto": False},
-    "Techmarine": {"emoji": "⚙️", "auto": False},
-    "Librarian": {"emoji": "📖", "auto": False},
-    "Apothecary": {"emoji": "⚕️", "auto": False},
-    "Lector": {"emoji": "🧿", "auto": False},
-    "Daemonium Palatinae": {"emoji": "🪦", "auto": False},
-    "Lector-Sergeant": {"emoji": "☠️", "auto": False},
-    "Ancient": {"emoji": "📜", "auto": False},
+    "Bladeguard Veteran": {"emoji": "<:1st_co:1499188889766854746> ", "auto": False},
+    "Enochian Guard": {"emoji": "<:enochian_guard:1499476859275055246> ", "auto": False},
+    "Techmarine": {"emoji": "<:techmarine:1499184650097131571> ", "auto": False},
+    "Librarian": {"emoji": "<:librarianj:1499184409322979500> ", "auto": False},
+    "Apothecary": {"emoji": "<:apothecary:1499184375093268611> ", "auto": False},
+    "Lector": {"emoji": "<:enochian_guard_captain:1499186105671618663> ", "auto": False},
+    "Daemonium Palatinae": {"emoji": "<:purgatomb_captain:1499184263801733232> ", "auto": False},
+    "Lector-Sergeant": {"emoji": "<:reclusiam:1499184217823776901> ", "auto": False},
+    "Ancient": {"emoji": "<:master_of_the_fleet:1499188871391481997> ", "auto": False},
 }
 CHALLENGE_CHOICES = [
     app_commands.Choice(name=name, value=name)
