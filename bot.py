@@ -831,26 +831,28 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     # DOSSIER BLOCK
     # -------------------------
     dossier = (
-        "```ini\n"
-        f"[IMPERIAL SERVICE RECORD]\n"
-        f"Designation: {member.display_name}\n"
-        f"Rank: {rank}\n"
-        f"Time in Service: {days} days\n"
-        "\n"
-        f"[COMBAT STATISTICS]\n"
-        f"Rites Earned: {rites}\n"
-        f"Gene Seeds Secured: {gene}\n"
-        "\n"
-        f"[CHAPTER ACCOLADES]\n"
-        f"{badges if badges else 'None recorded'}\n"
-        "\n"
-        f"[RELICS]\n"
-        f"{relic_text}\n"
-        "```"
-    )
+    "```ini\n"
+    "+++ IMPERIAL SERVICE RECORD +++\n"
+    f"Designation: {member.display_name}\n"
+    f"RANK: {rank}\n"
+    f"Time in Service: {days} days\n"
+    "\n"
+    "━━━━━━━━━━━━━━━━━━━━\n"
+    "+++ COMBAT STATISTICS +++\n"
+    f"Rites Earned: {rites}\n"
+    f"Gene Seeds Secured: {gene}\n"
+    "\n"
+    "━━━━━━━━━━━━━━━━━━━━\n"
+    "+++ CHAPTER ACCOLADES +++\n"
+    f"{badges if badges else 'None recorded'}\n"
+    "\n"
+    "+++ RELICS +++\n"
+    f"{relic_text}\n"
+    "```"
+)
 
     embed = discord.Embed(
-        title="☠️...ASTARTES RECORD DOSSIER...☠️",
+        title="☠️...ASTARTES DATASLATE...☠️",
         description=dossier,
         color=discord.Color.dark_purple()
     )
@@ -861,7 +863,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     # PROGRESS (INSIDE SAME EMBED)
     # -------------------------
     embed.add_field(
-        name="...PROGRESSION...",
+        name="...progress...",
         value=progress_section,
         inline=False
     )
