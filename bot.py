@@ -214,15 +214,15 @@ RANKS = {
     24: "Scout",
     75: "Battle Brother",
     125: "Brother-Initiate",
-    300: "Veteran",
-    450: "Bladeguard Veteran",
-    600: "Sergeant",
-    750: "Lector",
-    825: "Lector-Sergeant",
-    950: "Ancient",
-    1200: "Lieutenant",
-    1500: "Almoner",
-    2000: "Almoner-Lieutenant"
+    420: "Veteran",
+    600: "Bladeguard Veteran",
+    750: "Sergeant",
+    900: "Lector",
+    1100: "Lector-Sergeant",
+    1350: "Ancient",
+    1600: "Lieutenant",
+    2000: "Almoner",
+    2500: "Almoner-Lieutenant"
 }
 
 # ==================================================
@@ -232,13 +232,13 @@ RANKS = {
 RELICS = {
     "Hellslayer": {"gene": 45, "rites": 125},
     "Serpent Staff of Sabazius": {"gene": 65, "rites": 125},
-    "Cessation": {"gene": 75, "rites": 300},
-    "Liber Exorcismus": {"gene": 85, "rites": 300},
-    "Expulsiaris": {"gene": 90, "rites": 450},
-    "Silent Cry": {"gene": 100, "rites": 600},
-    "Exile Plate": {"gene": 120, "rites": 750},
-    "Voidbane": {"gene": 135, "rites": 750},
-    "Daemonarchia Claviculus": {"gene": 200, "rites": 1200},
+    "Cessation": {"gene": 75, "rites": 420},
+    "Liber Exorcismus": {"gene": 85, "rites": 420},
+    "Expulsiaris": {"gene": 90, "rites": 600},
+    "Silent Cry": {"gene": 100, "rites": 750},
+    "Exile Plate": {"gene": 120, "rites": 900},
+    "Voidbane": {"gene": 135, "rites": 900},
+    "Daemonarchia Claviculus": {"gene": 200, "rites": 1600},
 }
 
 CHALLENGE_TO_RANK = {
@@ -440,42 +440,42 @@ CHALLENGE_REQUIREMENTS = {
     },
     
     "Veteran": {
-        "rites": 300,
+        "rites": 420,
         "days": 30
     },
 
     "Bladeguard Veteran": {
-        "rites": 450,
+        "rites": 600,
         "approval": True
     },
 
     "Enochian Guard": {
-        "rites": 0,
+        "rites": 420,
         "approval": True,
         "special": "Must be Veteran"
     },
 
     "Sergeant": {
-        "rites": 600
+        "rites": 750
     },
 
     "Techmarine": {
-        "rites": 600,
+        "rites": 750,
         "approval": True
     },
 
     "Librarian": {
-        "rites": 600,
+        "rites": 750,
         "approval": True
     },
 
     "Apothecary": {
-        "rites": 600,
+        "rites": 750,
         "approval": True
     },
 
     "Lector": {
-        "rites": 750,
+        "rites": 900,
         "approval": True
     },
 
@@ -486,12 +486,12 @@ CHALLENGE_REQUIREMENTS = {
     },
 
     "Lector-Sergeant": {
-        "rites": 825,
+        "rites": 1100,
         "approval": True
     },
 
     "Ancient": {
-        "rites": 950,
+        "rites": 1350,
         "approval": True
     }
 }
