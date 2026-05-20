@@ -1208,6 +1208,8 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
     member = member or interaction.user
 
+    await interaction.respose.defer()
+
     user = get_user(member.id)
     rites = user["rites"]
     completed = user.get("completed_challenges", [])
@@ -1267,7 +1269,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
             color=discord.Color.dark_gold()
         )
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 @bot.event
 async def on_ready():
     global db_lock, event_lock
