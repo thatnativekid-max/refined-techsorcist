@@ -810,10 +810,8 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
         if rank_name in completed:
             emoji_display += CHALLENGES[rank_name]["emoji"] + " "
 
-    rank_display = f"+{rank}+"
-    if emoji_display:
-        rank_display += f"\n\n{emoji_display.strip()}"
-
+    rank_display = f"+ {rank} +"
+    
     embed.add_field(name="Rank", value=rank_display, inline=False)
     embed.add_field(name="Total Rites", value=rites, inline=False)
     embed.add_field(name="Gene Seeds Found", value=gene, inline=False)
@@ -824,6 +822,8 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 
     embed.add_field(name="Relics Earned", value=relic_display, inline=False)
     embed.add_field(name="Progress", value=get_progress_text(rites), inline=False)
+    if emoji_display:
+        rank_display += f"\n\n{emoji_display.strip()}"
 
     await interaction.followup.send(embed=embed)
 
