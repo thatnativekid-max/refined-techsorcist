@@ -831,18 +831,18 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     # DOSSIER BLOCK
     # -------------------------
     dossier = (
-    f"✠ **IMPERIAL SERVICE RECORD** ✠\n"
+    f"✠ **SERVICE RECORD** ✠\n"
     f"══════════════════════════\n"
     f"**Designation:** {member.display_name}\n"
-    f"**Sacred Rank:** ✠ **{rank.upper()}** ✠\n"
+    f"**Rank:** ✠ **{rank.upper()}** ✠\n"
     f"**Years in Service:** {days} days\n"
     "\n"
-    f"☠ **COMBAT DOCTRINE & HONORS** ☠\n"
+    f"☠ **COMBAT RECORD** ☠\n"
     f"══════════════════════════\n"
     f"**Rites of Battle Completed:** {rites}\n"
-    f"**Gene-Seed Contributions:** {gene}\n"
+    f"**Gene-Seeds Collected:** {gene}\n"
     "\n"
-    f"⚔ **CHAPTER ACCOLADES** ⚔\n"
+    f"⚔ **MARKS OF DISTINCTION** ⚔\n"
     f"══════════════════════════\n"
     f"{badges if badges else '*No honors recorded in the Librarium*'}\n"
     "\n"
@@ -865,7 +865,7 @@ embed.set_thumbnail(url=member.display_avatar.url)
     # PROGRESS (INSIDE SAME EMBED)
     # -------------------------
     embed.add_field(
-        name="...progress...",
+        name="...ASCENSION THRESHOLD...",
         value=progress_section,
         inline=False
     )
