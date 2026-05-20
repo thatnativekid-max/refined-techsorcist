@@ -852,12 +852,11 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 )
 
     embed = discord.Embed(
-    title="☠️ ...ADEPTUS ASTARTES... ☠️",
+    title="☠️ ...ADEPTUS ASTARTES... ☠️\u200b\n——DATASLATE—— ",
     description=dossier,
     color=discord.Color.dark_red()
 )
 
-    embed.set_author(name="DATASLATE")
 
     embed.set_thumbnail(url=member.display_avatar.url)
     
