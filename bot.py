@@ -1239,7 +1239,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         if challenge_name in completed:
             status = "COMPLETED"
         else:
-            status = "IN PROGRESS"
+            status = "PENDING"
 
         # Dependency locks
         if challenge_name == "Enochian Guard" and "Veteran" not in completed:
