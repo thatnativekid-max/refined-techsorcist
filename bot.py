@@ -857,10 +857,8 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     color=discord.Color.dark_red()
 )
 
-embed.set_thumbnail(url=member.display_avatar.url)
-
     embed.set_thumbnail(url=member.display_avatar.url)
-
+    
     # -------------------------
     # PROGRESS (INSIDE SAME EMBED)
     # -------------------------
