@@ -831,31 +831,33 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     # DOSSIER BLOCK
     # -------------------------
     dossier = (
-    "```ini\n"
-    "+++ IMPERIAL SERVICE RECORD +++\n"
-    f"Designation: {member.display_name}\n"
-    f"RANK: {rank}\n"
-    f"Time in Service: {days} days\n"
+    f"✠ **IMPERIAL SERVICE RECORD** ✠\n"
+    f"══════════════════════════\n"
+    f"**Designation:** {member.display_name}\n"
+    f"**Sacred Rank:** ✠ **{rank.upper()}** ✠\n"
+    f"**Years in Service:** {days} days\n"
     "\n"
-    "━━━━━━━━━━━━━━━━━━━━\n"
-    "+++ COMBAT STATISTICS +++\n"
-    f"Rites Earned: {rites}\n"
-    f"Gene Seeds Secured: {gene}\n"
+    f"☠ **COMBAT DOCTRINE & HONORS** ☠\n"
+    f"══════════════════════════\n"
+    f"**Rites of Battle Completed:** {rites}\n"
+    f"**Gene-Seed Contributions:** {gene}\n"
     "\n"
-    "━━━━━━━━━━━━━━━━━━━━\n"
-    "+++ CHAPTER ACCOLADES +++\n"
-    f"{badges if badges else 'None recorded'}\n"
+    f"⚔ **CHAPTER ACCOLADES** ⚔\n"
+    f"══════════════════════════\n"
+    f"{badges if badges else '*No honors recorded in the Librarium*'}\n"
     "\n"
-    "+++ RELICS +++\n"
-    f"{relic_text}\n"
-    "```"
+    f"🕯 **SANCTIFIED RELICS IN POSSESSION** 🕯\n"
+    f"══════════════════════════\n"
+    f"{relic_text if relics else '*None entrusted by the Chapter*'}\n"
 )
 
-    embed = discord.Embed(
-        title="☠️...ASTARTES DATASLATE...☠️",
-        description=dossier,
-        color=discord.Color.dark_purple()
-    )
+   embed = discord.Embed(
+    title="☠️ ADEPTUS ASTARTES — DATASLATE ☠️",
+    description=dossier,
+    color=discord.Color.dark_red()
+)
+
+embed.set_thumbnail(url=member.display_avatar.url)
 
     embed.set_thumbnail(url=member.display_avatar.url)
 
