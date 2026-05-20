@@ -851,7 +851,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     f"{relic_text if relics else '*None entrusted by the Chapter*'}\n"
 )
 
-   embed = discord.Embed(
+    embed = discord.Embed(
     title="☠️ ADEPTUS ASTARTES — DATASLATE ☠️",
     description=dossier,
     color=discord.Color.dark_red()
