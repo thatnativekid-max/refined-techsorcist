@@ -492,7 +492,7 @@ CHALLENGE_REQUIREMENTS = {
 CHALLENGES = {
     "Scout": {"emoji": "<:11_12th_co:1499186125611208764> ", "auto": True},
     "Battle Brother": {"emoji": "<:10th_co:1499184291878277180> ", "auto": True},
-    "Brother-Initiate": {"emoji": "<:3rd_co:1499190609271849001> ", "auto": False},
+    "Brother-Initiate": {"emoji": "<:sergeant:1499186152765264033>", "auto": False},
     "Lexicanum": {"emoji": "📖", "auto": False},
     "Judiciar": {"emoji": "<:daemonium_palatinae:1499184311025275064> ", "auto": False},
     "Tech Adept": {"emoji": "⚙️", "auto": False},
