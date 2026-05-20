@@ -789,41 +789,82 @@ async def approve_challenge(interaction: discord.Interaction, member: discord.Me
 
 @bot.tree.command(name="player_card")
 async def player_card(interaction: discord.Interaction, member: discord.Member = None):
-    await interaction.response.defer()  # 🔥 FIX
+    await interaction.response.defer()
+
     member = member or interaction.user
-    
     user = get_user(member.id)
-    
+
     rites = user["rites"]
     gene = user["gene"]
-
     days = get_member_days(member)
-
-    embed = discord.Embed(title="🪪 Service Record", color=discord.Color.purple())
-    embed.set_thumbnail(url=member.display_avatar.url)
-
-    rank = get_rank_with_time(member, rites)
     completed = user.get("completed_challenges", [])
 
-    emoji_display = ""
-    for rank_name in CHALLENGES.keys():
-        if rank_name in completed:
-            emoji_display += CHALLENGES[rank_name]["emoji"] + " "
+    rank = get_rank_with_time(member, rites)
 
-    rank_display = f"+ {rank} +"
-    
-    embed.add_field(name="Rank", value=rank_display, inline=False)
-    embed.add_field(name="Total Rites", value=rites, inline=False)
-    embed.add_field(name="Gene Seeds Found", value=gene, inline=False)
-    embed.add_field(name="Time in Chapter", value=f"{days} days", inline=False)
+    # -------------------------
+    # BADGES
+    # -------------------------
+    badges = "".join(
+        f"{CHALLENGES[name]['emoji']} "
+        for name in CHALLENGES
+        if name in completed
+    ).strip()
 
-    relic_list = user.get("relics", [])
-    relic_display = "\n".join(relic_list) if relic_list else "None"
+    # -------------------------
+    # RELICS
+    # -------------------------
+    relics = user.get("relics", [])
+    relic_text = "\n".join(f"• {r}" for r in relics) if relics else "None recorded"
 
-    embed.add_field(name="Relics Earned", value=relic_display, inline=False)
-    embed.add_field(name="Progress", value=get_progress_text(rites), inline=False)
-    if emoji_display:
-        rank_display += f"\n\n{emoji_display.strip()}"
+    # -------------------------
+    # PROGRESS BAR (KEY PART)
+    # -------------------------
+    next_rank, next_req = get_next_rank(rites)
+
+    if next_rank:
+        progress_bar_text = progress_bar(rites, next_req)
+        progress_section = f"Next Rank: **{next_rank}**\n{progress_bar_text}"
+    else:
+        progress_section = "MAX RANK ACHIEVED"
+
+    # -------------------------
+    # DOSSIER BLOCK
+    # -------------------------
+    dossier = (
+        "```ini\n"
+        f"[IMPERIAL SERVICE RECORD]\n"
+        f"Designation: {member.display_name}\n"
+        f"Rank: {rank}\n"
+        f"Time in Service: {days} days\n"
+        "\n"
+        f"[COMBAT STATISTICS]\n"
+        f"Rites Earned: {rites}\n"
+        f"Gene Seeds Secured: {gene}\n"
+        "\n"
+        f"[CHAPTER ACCOLADES]\n"
+        f"{badges if badges else 'None recorded'}\n"
+        "\n"
+        f"[RELICS]\n"
+        f"{relic_text}\n"
+        "```"
+    )
+
+    embed = discord.Embed(
+        title="☠️...ASTARTES RECORD DOSSIER...☠️",
+        description=dossier,
+        color=discord.Color.dark_purple()
+    )
+
+    embed.set_thumbnail(url=member.display_avatar.url)
+
+    # -------------------------
+    # PROGRESS (INSIDE SAME EMBED)
+    # -------------------------
+    embed.add_field(
+        name="...PROGRESSION...",
+        value=progress_section,
+        inline=False
+    )
 
     await interaction.followup.send(embed=embed)
 
