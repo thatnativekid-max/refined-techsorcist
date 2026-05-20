@@ -212,8 +212,8 @@ class EventApprovalView(discord.ui.View):
 
 RANKS = {
     24: "Scout",
-    75: "Battle Brother",
-    125: "Brother-Initiate",
+    95: "Battle Brother",
+    150: "Brother-Initiate",
     420: "Veteran",
     600: "Bladeguard Veteran",
     750: "Sergeant",
@@ -230,7 +230,7 @@ RANKS = {
 # ==================================================
 
 RELICS = {
-    "Hellslayer": {"gene": 45, "rites": 125},
+    "Hellslayer": {"gene": 45, "rites": 150},
     "Serpent Staff of Sabazius": {"gene": 65, "rites": 125},
     "Cessation": {"gene": 75, "rites": 420},
     "Liber Exorcismus": {"gene": 85, "rites": 420},
@@ -250,6 +250,7 @@ CHALLENGE_TO_RANK = {
     "Mechanicus": "Tech Adept",
     "Thrice Sealed Chalice": "Helix Adept",
     "Veteran Honours": "Veteran",
+    "Exorcist Sergeant": Sergeant",
     "Emperor's Blade": "Bladeguard Veteran",
     "Enochian": "Enochian Guard",
     "Apothecary": "Apothecary",
@@ -412,30 +413,30 @@ CHALLENGE_REQUIREMENTS = {
     },
 
     "Battle Brother": {
-        "rites": 75,
+        "rites": 95,
         "days": 7
     },
 
     "Brother-Initiate": {
-        "rites": 125,
+        "rites": 150,
         "approval": True
     },
     "Lexicanum": {
-        "rites": 125,
+        "rites": 150,
         "approval": True
 },
     "Judiciar": {
-        "rites": 125,
+        "rites": 150,
         "approval": True
     },
 
     "Tech Adept": {
-        "rites": 125,
+        "rites": 150,
         "approval": True
     },
 
     "Helix Adept": {
-        "rites": 125,
+        "rites": 150,
         "approval": True
     },
     
@@ -508,6 +509,7 @@ CHALLENGES = {
     "Bladeguard Veteran": {"emoji": "<:1st_co:1499188889766854746> ", "auto": False},
     "Enochian Guard": {"emoji": "<:enochian_guard:1499476859275055246> ", "auto": False},
     "Techmarine": {"emoji": "<:techmarine:1499184650097131571> ", "auto": False},
+    "Sergeant": {"emoji": "<:Sergeant:1506742675406192730>", "auto": False}, 
     "Librarian": {"emoji": "<:librarianj:1499184409322979500> ", "auto": False},
     "Apothecary": {"emoji": "<:apothecary:1499184375093268611> ", "auto": False},
     "Lector": {"emoji": "<:lector:1506715579715817693>", "auto": False},
