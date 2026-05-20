@@ -838,22 +838,22 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     f"**Years in Service:** {days} years\n"
     "\n"
     f"☠ **++COMBAT LOG++** ☠\n"
-    f"═════════════════\n"
+    f"═══════════════\n"
     f"**Service Rites Earned:** {rites}\n"
     f"**Gene-Seeds Collected:** {gene}\n"
     "\n"
     f"⚔ **++MARKS OF VALOR++** ⚔\n"
-    f"═════════════════\n"
+    f"══════════════════\n"
     f"{badges if badges else '*No honors recorded in the Librarium*'}\n"
     "\n"
     f"🕯 **++SANCTIFIED RELICS++** 🕯\n"
-    f"═════════════════\n"
+    f"════════════════════\n"
     f"{relic_text if relics else '*None entrusted by the Chapter*'}\n"
 )
 
     embed = discord.Embed(
-    title="☠️ ADEPTUS ASTARTES ☠️\u200b\n\u200b\n— DATASLATE —",
-    description=dossier,
+    title="☠️ ADEPTUS ASTARTES ☠️",
+    description="**— DATASLATE —**\n\n" + dossier,
     color=discord.Color.dark_red()
 )
 
