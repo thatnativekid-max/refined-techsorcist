@@ -1241,10 +1241,10 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
 
         # Dependency locks
         if challenge_name == "Enochian Guard" and "Veteran" not in completed:
-            status = "\u200b\nLOCKED (REQ VETERAN)"
+            status = "LOCKED \u200b\n(REQ VETERAN)"
 
         if challenge_name == "Daemonium Palatinae" and "Enochian Guard" not in completed:
-            status = "\u200b\nLOCKED (REQ ENOCHIAN)"
+            status = "LOCKED \u200b\n(REQ ENOCHIAN)"
 
         # -------------------------
         # HEADER LINE (ALIGNED)
