@@ -250,7 +250,7 @@ CHALLENGE_TO_RANK = {
     "Mechanicus": "Tech Adept",
     "Thrice Sealed Chalice": "Helix Adept",
     "Veteran Honours": "Veteran",
-    "Exorcist Sergeant": Sergeant",
+    "Exorcist Sergeant": "Sergeant",
     "Emperor's Blade": "Bladeguard Veteran",
     "Enochian": "Enochian Guard",
     "Apothecary": "Apothecary",
