@@ -1209,66 +1209,72 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
     member = member or interaction.user
 
     user = get_user(member.id)
-    
     rites = user["rites"]
     completed = user.get("completed_challenges", [])
-
     days = get_member_days(member)
 
+    dossier = "```ini\n"
+dossier += f"[CHALLENGE DOSSIER - {member.display_name}]\n\n"
+
+NAME_WIDTH = 34 # adjust this if you want tighter/wider layout
+
+for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
+
+    emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
+    auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
+
+    # -------------------------
+    # STATUS
+    # -------------------------
+    status = "LOCKED"
+    if challenge_name in completed:
+        status = "COMPLETED"
+
+    # Dependencies
+    if challenge_name == "Enochian Guard":
+        if "Veteran" not in completed:
+            status = "LOCKED (REQUIRES VETERAN)"
+
+    if challenge_name == "Daemonium Palatinae":
+        if "Enochian Guard" not in completed:
+            status = "LOCKED (REQUIRES ENOCHIAN GUARD)"
+
+    # -------------------------
+    # FORMATTED NAME LINE (ALIGNED)
+    # -------------------------
+    title = f"{emoji} {challenge_name}"
+
+    # truncate if too long (prevents breaking alignment)
+    title = title[:NAME_WIDTH]
+
+    line = title.ljust(NAME_WIDTH)
+
+    dossier += f"{line} [ {status} ]\n"
+
+    # -------------------------
+    # REQUIREMENTS
+    # -------------------------
+    if "rites" in req:
+        dossier += f" - Rites: {rites}/{req['rites']}\n"
+
+    if "days" in req:
+        dossier += f" - Days: {days}/{req['days']}\n"
+
+    if req.get("approval"):
+        dossier += f" - Officer Approval Required\n"
+
+    if "special" in req:
+        dossier += f" - NOTE: {req['special']}\n"
+
+    dossier += "\n"
+
+    dossier += "```"
+
     embed = discord.Embed(
-        title="📜 Challenge Progression",
-        description=f"Tracking challenge status for **{member.display_name}**",
+        title="📜 Challenge Progression Dossier",
+        description=dossier,
         color=discord.Color.dark_gold()
     )
-
-    for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
-
-        emoji = CHALLENGES.get(challenge_name, {}).get("emoji", "")
-        auto = CHALLENGES.get(challenge_name, {}).get("auto", False)
-
-        status = "🔒 Locked"
-        if challenge_name in completed:
-            status = "✅ Completed"
-
-        # -------------------------
-        # REQUIREMENT BUILD
-        # -------------------------
-        lines = []
-
-        if "rites" in req:
-            lines.append(f"Rites: {rites}/{req['rites']}")
-
-        if "days" in req:
-            lines.append(f"Time: {days}/{req['days']} days")
-
-        if req.get("approval"):
-            lines.append("Officer Approval Required")
-
-        if "special" in req:
-            lines.append(f"⚠ {req['special']}")
-
-        # -------------------------
-        # DEPENDENCY CHECKS
-        # -------------------------
-
-        if challenge_name == "Enochian Guard":
-            if "Veteran" not in completed:
-                status = "🔒 Locked (Requires Veteran)"
-
-        if challenge_name == "Daemonium Palatinae":
-            if "Enochian Guard" not in completed:
-                status = "🔒 Locked (Requires Enochian Guard)"
-
-        # -------------------------
-        # FINAL DISPLAY
-        # -------------------------
-
-        embed.add_field(
-            name=f"{emoji} {challenge_name} — {status}",
-            value=f"Type: {'Auto' if auto else 'Officer Approval'}\n"
-                  + ("\n".join(lines) if lines else "No requirements listed"),
-            inline=False
-        )
 
     await interaction.response.send_message(embed=embed)
 
