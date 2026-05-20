@@ -852,7 +852,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 )
 
     embed = discord.Embed(
-    title="☠️ ...ADEPTUS ASTARTES... ☠️\u200b\n//DATASLATE//",
+    title="☠️ ...ADEPTUS ASTARTES... ☠️\u200b\n//—DATASLATE—//",
     description=dossier,
     color=discord.Color.dark_red()
 )
