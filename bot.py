@@ -395,9 +395,11 @@ async def add_rites(member, amount, gene_bonus=0):
         conn.close()
 
     return {
+        "rites": row[0],
+        "gene": row[1],
         "relics": row[2].split(",") if row[2] else [],
         "completed_challenges": row[3].split(",") if row[3] else []
-            }
+    }
 
 
 # ==================================================
@@ -592,7 +594,7 @@ async def check_relics_cached(member: discord.Member, user: dict):
         if relic in user["relics"]:
             continue
 
-        if user["gene"] >= req["gene"] and user["rites"] >= req["rites"]:
+        if user.get("gene", 0) >= req["gene"] and user.get("rites", 0) >= req["rites"]:
             user["relics"].append(relic)
             unlocked.append(relic)
 
