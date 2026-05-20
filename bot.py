@@ -1218,7 +1218,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
     NAME_WIDTH = 28
 
     dossier = "```ini\n"
-    dossier += f"[CHALLENGE DOSSIER - {member.display_name}]\n\n"
+    dossier += f"[CHALLENGE DATASLATE - {member.display_name}]\n\n"
 
     for challenge_name, req in CHALLENGE_REQUIREMENTS.items():
 
@@ -1232,7 +1232,6 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         else:
             status = "IN PROGRESS"
 
-        # Dependency locks
         if challenge_name == "Enochian Guard" and "Veteran" not in completed:
             status = "LOCKED (REQ VETERAN)"
 
@@ -1248,7 +1247,7 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         dossier += header + "\n"
 
         # -------------------------
-        # DETAILS (ONLY IF APPLICABLE)
+        # DETAILS
         # -------------------------
         if "rites" in req:
             dossier += f"Rites {rites}/{req['rites']}\n"
@@ -1259,17 +1258,18 @@ async def challenge_progress(interaction: discord.Interaction, member: discord.M
         if req.get("approval"):
             dossier += "Officer Approval Required\n"
 
-            dossier += "\n"
+        dossier += "\n"
 
-        dossier += "```"
+    dossier += "```"
 
-        embed = discord.Embed(
-            title="📜 Challenge Progression Dossier",
-            description=dossier,
-            color=discord.Color.dark_gold()
-        )
+    embed = discord.Embed(
+        title="Challenge Progress",
+        description=dossier,
+        color=discord.Color.dark_gold()
+    )
 
-        await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed)
+
 @bot.event
 async def on_ready():
     global db_lock, event_lock
