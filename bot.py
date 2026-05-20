@@ -842,7 +842,7 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     f"**Service Rites Earned:** {rites}\n"
     f"**Gene-Seeds Collected:** {gene}\n"
     "\n"
-    f"✠ **++MARKS OF VALOR++** ☠\n"
+    f"✠ **++MARKS OF VALOR++** ✠\n"
     f"⫘⫘⫘⫘⫘⫘⫘⫘⫘\n"
     f"{badges if badges else '*No honors recorded in the Librarium*'}\n"
     "\n"
