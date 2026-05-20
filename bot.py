@@ -249,6 +249,7 @@ CHALLENGE_TO_RANK = {
     "Emperor's Might": "Judiciar",
     "Mechanicus": "Tech Adept",
     "Thrice Sealed Chalice": "Helix Adept",
+    "Veteran Honours": "Veteran",
     "Emperor's Blade": "Bladeguard Veteran",
     "Enochian": "Enochian Guard",
     "Apothecary": "Apothecary",
@@ -437,7 +438,11 @@ CHALLENGE_REQUIREMENTS = {
         "rites": 125,
         "approval": True
     },
-
+    
+    "Veteran": {
+        "rites": 250,
+        "days": 30
+    },
 
     "Bladeguard Veteran": {
         "rites": 350,
@@ -499,6 +504,7 @@ CHALLENGES = {
     "Judiciar": {"emoji": "<:daemonium_palatinae:1499184311025275064> ", "auto": False},
     "Tech Adept": {"emoji": "⚙️", "auto": False},
     "Helix Adept": {"emoji": "⛑️", "auto": False},
+    "Veteran": {"emoji": "<:veteran:YOUR_ID>","auto": True},
     "Bladeguard Veteran": {"emoji": "<:1st_co:1499188889766854746> ", "auto": False},
     "Enochian Guard": {"emoji": "<:enochian_guard:1499476859275055246> ", "auto": False},
     "Techmarine": {"emoji": "<:techmarine:1499184650097131571> ", "auto": False},
