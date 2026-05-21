@@ -313,7 +313,7 @@ MISSION_LIST = [
     "Inferno", "Decapitation", "Vox Liberatis", "Reliquary",
     "Fall of Atreus", "Ballistic Engine", "Termination",
     "Obelisk", "Exfiltration", "Vortex",
-    "Reclamation", "Disruption, Purgation"
+    "Reclamation", "Disruption", "Purgation"
 ]
 
 MISSION_CHOICES = [app_commands.Choice(name=m, value=m) for m in MISSION_LIST]
