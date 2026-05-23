@@ -913,6 +913,8 @@ async def operation_report(
     lines = []
 
     for m in members:
+        user = get_user(m.id)
+        next_relic, relic_req, relic_remaining = get_next_relic(user)
         user = await process_progress(m, total_rites, gene_bonus)
 
         rites = user["rites"]
@@ -995,6 +997,8 @@ async def stratagem_report(
     lines = []
 
     for m in members:
+        user = get_user(m.id)
+        next_relic, relic_req, relic_remaining = get_next_relic(user)
         user = await process_progress(m, total_rites, gene_bonus)
         rites = user["rites"]
         gene = user["gene"]
