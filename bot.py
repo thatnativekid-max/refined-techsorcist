@@ -831,7 +831,10 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
 
     if next_rank:
         progress_bar_text = progress_bar(rites, next_req)
-        progress_section = f"{relic_section}\nNext Rank: **{next_rank}**\n{progress_bar_text}"
+        progress_section = (
+            f"Next Rank: **{next_rank}**\n"
+            f"{progress_bar_text}"
+        )
     else:
         progress_section = f"{relic_section}\nMAX RANK ACHIEVED"
 
