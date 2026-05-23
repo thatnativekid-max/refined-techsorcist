@@ -1198,29 +1198,57 @@ async def relic_progress(interaction: discord.Interaction, member: discord.Membe
 
     member = member or interaction.user
 
+    await interaction.response.defer()
+
     user = get_user(member.id)
 
     rites = user["rites"]
     gene = user["gene"]
     unlocked = user.get("relics", [])
 
+    NAME_WIDTH = 34
+
+    dossier = "```ini\n"
+    dossier += f"[RELIC DATASLATE - {member.display_name}]\n\n"
+
+    for relic, req in RELICS.items():
+
+        if relic in unlocked:
+            status = "UNLOCKED"
+        else:
+            status = "LOCKED"
+
+        title = relic[:NAME_WIDTH]
+        header = title.ljust(NAME_WIDTH) + status
+
+        dossier += header + "\n"
+
+        dossier += f" Rites {rites}/{req['rites']}\n"
+        dossier += f" Gene {gene}/{req['gene']}\n"
+
+        # Remaining requirements
+        remaining_rites = max(0, req['rites'] - rites)
+        remaining_gene = max(0, req['gene'] - gene)
+
+        if status == "LOCKED":
+            dossier += (
+                f" Remaining {remaining_rites} Rites | "
+                f"{remaining_gene} Gene\n"
+            )
+
+        dossier += "\n"
+
+    dossier += "[RELIC SANCTIFICATION TRACKING]\n"
+    dossier += "```"
+
     embed = discord.Embed(
-        title="𝕽elic 𝕻rogression",
-        description=f"Tracking relic unlock status for **{member.display_name}**",
+        title="Relic Progress",
+        description=dossier,
         color=discord.Color.dark_purple()
     )
 
-    for relic, req in RELICS.items():
-        status = "✅ UNLOCKED" if relic in unlocked else "🔒 LOCKED"
-
-        embed.add_field(
-            name=f"{relic} — {status}",
-            value=f"Gene Seeds: {gene}/{req['gene']}\nRites: {rites}/{req['rites']}",
-            inline=False
-        )
-
-    await interaction.response.send_message(embed=embed)
-
+    await interaction.followup.send(embed=embed)
+    
 @bot.tree.command(
     name="challenge_progress",
     description="View challenge progression for a member"
