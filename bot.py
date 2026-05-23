@@ -927,8 +927,7 @@ async def operation_report(
 
             relic_text = (
                 f"Next Relic: {next_relic}\n"
-                f"Rites: {rites}/{relic_data['rites']}\n"
-                f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
+                f"Gene Seed: {gene}/{relic_data['gene']}\n\n"
             )
         else:
             relic_text = (
@@ -1008,7 +1007,6 @@ async def stratagem_report(
 
             relic_text = (
                 f"Next Relic: {next_relic}\n"
-                f"Rites: {rites}/{relic_data['rites']}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
