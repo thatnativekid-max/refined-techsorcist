@@ -923,12 +923,12 @@ async def operation_report(
             relic_data = RELICS[next_relic]
 
             relic_text = (
-                f"⚜ Next Relic: {next_relic}\n"
+                f"Next Relic: {next_relic}\n"
                 f"Rites: {rites}/{relic_data['rites']}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
-            relic_text = "⚜ All Relics Unlocked\n\n"
+            relic_text = "All Relics Unlocked\n\n"
 
         lines.append(
             f"{m.mention}\n"
@@ -936,7 +936,7 @@ async def operation_report(
             f"{get_progress_text(rites)}"
         )
 
-    embed = discord.Embed(title="𝕺peration 𝕽eport", color=discord.Color.red())
+    embed = discord.Embed(title="++𝕺𝖕𝖊𝖗𝖆𝖙𝖎𝖔𝖓 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.red())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=f"{difficulty.value} (+{base} Rites)", inline=False)
 
@@ -1000,7 +1000,7 @@ async def stratagem_report(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
         )
 
-    embed = discord.Embed(title="𝕾tratagem 𝕽eport", color=discord.Color.gold())
+    embed = discord.Embed(title="++𝕾𝖙𝖗𝖆𝖙𝖆𝖌𝖊𝖒 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
 
@@ -1049,7 +1049,7 @@ async def siege_report(interaction: discord.Interaction,
         
         lines.append(f"{m.mention}\nTotal: {total}\n{get_progress_text(total)}")
 
-    embed = discord.Embed(title="𝕾iege 𝕽eport", color=discord.Color.blurple())
+    embed = discord.Embed(title="++𝕾𝖎𝖊𝖌𝖊 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.blurple())
     embed.add_field(name="Waves Cleared", value=str(waves.value), inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
@@ -1092,7 +1092,7 @@ async def pvp_report(
     total_rites = rites
     members = build_members(member1, member2, member3)
 
-    embed = discord.Embed(title="𝕻vP 𝕽eport", color=discord.Color.green())
+    embed = discord.Embed(title="++𝕻𝖛𝖕 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.green())
     embed.add_field(name="Mode", value=mode, inline=False)
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
@@ -1142,7 +1142,7 @@ async def exorsuits(
     total_rites = rites
     members = [m for m in [member1, member2, member3, member4] if m]
 
-    embed = discord.Embed(title="𝕰xorsuits 𝕽eport", color=discord.Color.teal())
+    embed = discord.Embed(title="++𝕰𝖝𝖔𝖗𝖘𝖚𝖎𝖙𝖘 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.teal())
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
     for m in members:
@@ -1174,7 +1174,7 @@ async def exorsuits(
 async def event_request(interaction: discord.Interaction, details: str):
 
     embed = discord.Embed(
-        title="𝕰vent 𝕽equest",
+        title="++𝕰𝖛𝖊𝖓𝖙 𝕽𝖊𝖖𝖚𝖊𝖘𝖙++",
         description=details,
         color=discord.Color.orange(),
         timestamp=datetime.now(timezone.utc)
