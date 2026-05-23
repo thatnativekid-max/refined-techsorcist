@@ -926,14 +926,12 @@ async def operation_report(
             relic_data = RELICS[next_relic]
 
             relic_text = (
-                f"...ASCENSION THRESHOLD...\n"
                 f"Next Relic: {next_relic}\n"
                 f"Rites: {rites}/{relic_data['rites']}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
             relic_text = (
-                f"...ASCENSION THRESHOLD...\n"
                 "All Relics Unlocked\n\n"
             )
 
@@ -1009,14 +1007,12 @@ async def stratagem_report(
             relic_data = RELICS[next_relic]
 
             relic_text = (
-                f"...ASCENSION THRESHOLD...\n"
                 f"Next Relic: {next_relic}\n"
                 f"Rites: {rites}/{relic_data['rites']}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
             relic_text = (
-                f"...ASCENSION THRESHOLD...\n"
                 "All Relics Unlocked\n\n"
             )
 
