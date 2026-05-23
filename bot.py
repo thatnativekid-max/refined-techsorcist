@@ -917,18 +917,20 @@ async def operation_report(
 
         await announce_relics(interaction, m, user)
 
-        next_relic, relic_req, relic_remaining = get_next_relic(user)
-
         if next_relic:
             relic_data = RELICS[next_relic]
 
             relic_text = (
+                f"...ASCENSION THRESHOLD...\n"
                 f"Next Relic: {next_relic}\n"
                 f"Rites: {rites}/{relic_data['rites']}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
-            relic_text = "All Relics Unlocked\n\n"
+            relic_text = (
+                f"...ASCENSION THRESHOLD...\n"
+                "All Relics Unlocked\n\n"
+            )
 
         lines.append(
             f"{m.mention}\n"
@@ -995,6 +997,21 @@ async def stratagem_report(
         gene = user["gene"]
 
         await announce_relics(interaction, m, user)
+
+        if next_relic:
+            relic_data = RELICS[next_relic]
+
+            relic_text = (
+                f"...ASCENSION THRESHOLD...\n"
+                f"Next Relic: {next_relic}\n"
+                f"Rites: {rites}/{relic_data['rites']}\n"
+                f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
+            )
+        else:
+            relic_text = (
+                f"...ASCENSION THRESHOLD...\n"
+                "All Relics Unlocked\n\n"
+            )
 
         lines.append(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
