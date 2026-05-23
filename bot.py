@@ -911,13 +911,29 @@ async def operation_report(
 
     for m in members:
         user = await process_progress(m, total_rites, gene_bonus)
+
         rites = user["rites"]
         gene = user["gene"]
 
         await announce_relics(interaction, m, user)
 
+        next_relic, relic_req, relic_remaining = get_next_relic(user)
+
+        if next_relic:
+            relic_data = RELICS[next_relic]
+
+            relic_text = (
+                f"⚜ Next Relic: {next_relic}\n"
+                f"Rites: {rites}/{relic_data['rites']}\n"
+                f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
+            )
+        else:
+            relic_text = "⚜ All Relics Unlocked\n\n"
+
         lines.append(
-            f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
+            f"{m.mention}\n"
+            f"{relic_text}"
+            f"{get_progress_text(rites)}"
         )
 
     embed = discord.Embed(title="𝕺peration 𝕽eport", color=discord.Color.red())
