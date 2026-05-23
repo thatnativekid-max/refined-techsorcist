@@ -841,22 +841,6 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     relics = user.get("relics", [])
     relic_text = "\n".join(f"• {r}" for r in relics) if relics else "None recorded"
 
-    # -------------------------
-    # NEXT RELIC
-    # -------------------------
-    next_relic, relic_req, relic_remaining = get_next_relic(user)
-
-    if next_relic:
-        relic_section = (
-            f"Next Relic: **{next_relic}**\n"
-            f"Rites: {user.get('rites', 0)} / {relic_req}\n"
-            f"Gene Seeds: {user.get('gene', 0)} / {RELICS[next_relic]['gene']}\n"
-        )
-    else:
-        relic_section = "All relics secured."
-    # -------------------------
-    # PROGRESS BAR (KEY PART)
-    # -------------------------
     next_rank, next_req = get_next_rank(rites)
 
     if next_rank:
@@ -865,9 +849,6 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     else:
         progress_section = f"{relic_section}\nMAX RANK ACHIEVED"
 
-    # -------------------------
-    # DOSSIER BLOCK
-    # -------------------------
     dossier = (
     f"☠ **++SERVICE RECORD++** ☠\n"
     f"⫘⫘⫘⫘⫘⫘⫘⫘⫘\n"
@@ -953,7 +934,7 @@ async def operation_report(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
         )
 
-    embed = discord.Embed(title="⚔️ Operation Report", color=discord.Color.red())
+    embed = discord.Embed(title="𝕺peration 𝕽eport", color=discord.Color.red())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=f"{difficulty.value} (+{base} Rites)", inline=False)
 
@@ -1017,7 +998,7 @@ async def stratagem_report(
             f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
         )
 
-    embed = discord.Embed(title="⚔️ Stratagem Report", color=discord.Color.gold())
+    embed = discord.Embed(title="𝕾tratagem 𝕽eport", color=discord.Color.gold())
     embed.add_field(name="Mission", value=mission.value, inline=False)
     embed.add_field(name="Difficulty", value=difficulty_text, inline=False)
 
@@ -1066,7 +1047,7 @@ async def siege_report(interaction: discord.Interaction,
         
         lines.append(f"{m.mention}\nTotal: {total}\n{get_progress_text(total)}")
 
-    embed = discord.Embed(title="⚔️ Siege Report", color=discord.Color.blurple())
+    embed = discord.Embed(title="𝕾iege 𝕽eport", color=discord.Color.blurple())
     embed.add_field(name="Waves Cleared", value=str(waves.value), inline=False)
     embed.add_field(name="Members", value="\n\n".join(lines), inline=False)
 
@@ -1109,7 +1090,7 @@ async def pvp_report(
     total_rites = rites
     members = build_members(member1, member2, member3)
 
-    embed = discord.Embed(title="⚔️ PvP Report", color=discord.Color.green())
+    embed = discord.Embed(title="𝕻vP 𝕽eport", color=discord.Color.green())
     embed.add_field(name="Mode", value=mode, inline=False)
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
@@ -1159,7 +1140,7 @@ async def exorsuits(
     total_rites = rites
     members = [m for m in [member1, member2, member3, member4] if m]
 
-    embed = discord.Embed(title="⚔️ Exorsuits Report", color=discord.Color.teal())
+    embed = discord.Embed(title="𝕰xorsuits 𝕽eport", color=discord.Color.teal())
     embed.add_field(name="Victory", value=victory.value, inline=False)
 
     for m in members:
@@ -1191,7 +1172,7 @@ async def exorsuits(
 async def event_request(interaction: discord.Interaction, details: str):
 
     embed = discord.Embed(
-        title="✏️Event Request",
+        title="𝕰vent 𝕽equest",
         description=details,
         color=discord.Color.orange(),
         timestamp=datetime.now(timezone.utc)
@@ -1222,7 +1203,7 @@ async def relic_progress(interaction: discord.Interaction, member: discord.Membe
     unlocked = user.get("relics", [])
 
     embed = discord.Embed(
-        title="🧬 Relic Progression",
+        title="𝕽elic 𝕻rogression",
         description=f"Tracking relic unlock status for **{member.display_name}**",
         color=discord.Color.dark_purple()
     )
