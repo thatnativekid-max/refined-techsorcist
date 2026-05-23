@@ -87,16 +87,13 @@ def techsorcist_records_only():
     async def predicate(interaction: discord.Interaction):
         if interaction.channel_id != TECHSORCIST_RECORDS_CHANNEL_ID:
             await interaction.response.send_message(
-                "📜 This command may only be used in Techsorcist Records.",
+                "This command may only be used in Techsorcist Records.",
                 ephemeral=True
             )
             return False
         return True
     return app_commands.check(predicate)
 
-# =========================
-# HELPERS (PUT GRID HERE)
-# =========================
 async def make_grid_image(attachments, cols=2):
     try:
         MAX_IMAGE_SIZE = 900 # max width/height per image
@@ -110,12 +107,9 @@ async def make_grid_image(attachments, cols=2):
             bio = BytesIO(data)
 
             with Image.open(bio) as img:
-                
-            
-            
+                  
                 img = img.convert("RGB")
 
-                # 🔥 Resize safely
                 img.thumbnail((MAX_IMAGE_SIZE, MAX_IMAGE_SIZE))
 
                 images.append(img.copy())
@@ -130,7 +124,6 @@ async def make_grid_image(attachments, cols=2):
         total_width = cols * w
         total_height = rows * h
 
-        # 🔥 Hard crash prevention
         if total_width * total_height > MAX_TOTAL_PIXELS:
             print("Grid too large — resizing further")
 
@@ -179,7 +172,7 @@ class EventApprovalView(discord.ui.View):
 
         if not interaction.user.guild_permissions.administrator:
             return await interaction.response.send_message(
-                "❌ Administrator permission required.",
+                "Administrator permission required.",
                 ephemeral=True
             )
 
@@ -195,7 +188,7 @@ class EventApprovalView(discord.ui.View):
 
         if not interaction.user.guild_permissions.administrator:
             return await interaction.response.send_message(
-                "❌ Administrator permission required.",
+                "Administrator permission required.",
                 ephemeral=True
             )
 
@@ -644,9 +637,6 @@ def save_user(user_id, user):
     conn.close()
     backup_database()
 
-# ==================================================
-# HELPERS
-# ==================================================
 async def safe_defer(interaction):
     if not interaction.response.is_done():
         await interaction.response.defer()
@@ -692,7 +682,7 @@ async def process_progress(member, rites, gene_bonus):
 async def announce_relics(interaction, member, user):
     for r in user.get("new_relics", []):
         await interaction.channel.send(
-            f"🏆 {member.mention} has unlocked relic: ⚜ {r}"
+            f"🏆 {member.mention} has unlocked relic: ⚜ {r} 🏆"
         )
 
 def get_next_relic(user):
@@ -759,7 +749,7 @@ async def edit_rites(
     await update_rank_cached(member, user)
 
     embed = discord.Embed(
-        title="🛠️ Rites Edited",
+        title="Rites Edited",
         color=discord.Color.orange()
     )
 
@@ -788,20 +778,16 @@ async def approve_challenge(interaction: discord.Interaction, member: discord.Me
     if challenge_name in user["completed_challenges"]:
         return await interaction.followup.send("Already completed.")
 
-    # ✅ update memory
     user["completed_challenges"].append(challenge_name)
 
-    # optional dedupe safety
     user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
 
-    # role reward
     role_name = CHALLENGE_TO_RANK.get(challenge_name)
     if role_name:
         role = discord.utils.get(member.guild.roles, name=role_name)
         if role:
             await member.add_roles(role)
 
-    # ❗ IMPORTANT: SAVE TO DB (this was missing)
     save_user(member.id, user)
 
     await interaction.followup.send(
