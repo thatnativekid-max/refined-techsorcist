@@ -728,7 +728,7 @@ def announce_double_rites(bot):
             "**+++ 𝔇𝔬𝔲𝔟𝔩𝔢 XP 𝔄𝔠𝔱𝔦𝔳𝔢 +++**\n\n"
             "Report to your battle stations armed and ready!\n"
             "Now is the time to commit great deeds in the name of the Emperor!\n\n"
-            "The Emperor Protects!"
+            "Event takes place between 7th-10th and 20th-23rd each month!"
         )
         
 def get_next_relic(user):
