@@ -809,12 +809,11 @@ async def edit_rites(
     await interaction.followup.send(embed=embed)
 
 
-@bot.tree.command(name="approve_challenge", description="Officer approval for challenge completion")
-@app_commands.choices(challenge=CHALLENGE_CHOICES)
+@bot.tree.command(name="approve_challenge")
 async def approve_challenge(interaction: discord.Interaction, member: discord.Member, challenge: app_commands.Choice[str]):
 
     if not interaction.user.guild_permissions.manage_roles:
-        return await interaction.response.send_message("❌ You do not have permission.", ephemeral=True)
+        return await interaction.response.send_message("❌ No permission.", ephemeral=True)
 
     await interaction.response.defer()
 
@@ -825,18 +824,12 @@ async def approve_challenge(interaction: discord.Interaction, member: discord.Me
         return await interaction.followup.send("Already completed.")
 
     user["completed_challenges"].append(challenge_name)
-
     user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
 
     role_name = CHALLENGE_TO_RANK.get(challenge_name)
 
-if role_name:
-    if challenge_name not in user["completed_challenges"]:
-        user["completed_challenges"].append(challenge_name)
-
-    user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
-
-    await assign_rank_role(member, role_name)
+    if role_name:
+        await assign_rank_role(member, role_name)
 
     save_user(member.id, user)
 
