@@ -219,6 +219,13 @@ RANKS = {
     2500: "Almoner-Lieutenant"
 }
 
+HIDDEN_PROGRESSION_RANKS = {
+    "Helix Adept",
+    "Tech Adept",
+    "Judiciar",
+    "Lexicanum"
+}
+
 # ==================================================
 # RELIC REWARDS SYSTEM
 # ==================================================
@@ -519,28 +526,34 @@ CHALLENGE_CHOICES = [
 # RANK LOGIC
 # ==================================================
 
-def get_rank_with_time(member: discord.Member, total):
-
+def get_rank_with_time(member, total):
     days = get_member_days(member)
-
     rank = "Aspirant"
 
     for threshold in sorted(RANKS.keys()):
-        if total >= threshold:
-            potential = RANKS[threshold]
+        potential = RANKS[threshold]
 
-            # Veteran requires 30 days
+        # skip hidden progression ranks
+        if potential in HIDDEN_PROGRESSION_RANKS:
+            continue
+
+        if total >= threshold:
             if potential == "Veteran" and days < 30:
                 continue
-
             rank = potential
 
     return rank
 
 def get_next_rank(total):
     for threshold in sorted(RANKS.keys()):
+        rank = RANKS[threshold]
+
+        if rank in HIDDEN_PROGRESSION_RANKS:
+            continue
+
         if total < threshold:
-            return RANKS[threshold], threshold
+            return rank, threshold
+
     return None, None
 
 def progress_bar(current, target, length=18):
@@ -816,8 +829,14 @@ async def approve_challenge(interaction: discord.Interaction, member: discord.Me
     user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
 
     role_name = CHALLENGE_TO_RANK.get(challenge_name)
-    if role_name:
-        await assign_rank_role(member, role_name)
+
+if role_name:
+    if challenge_name not in user["completed_challenges"]:
+        user["completed_challenges"].append(challenge_name)
+
+    user["completed_challenges"] = list(dict.fromkeys(user["completed_challenges"]))
+
+    await assign_rank_role(member, role_name)
 
     save_user(member.id, user)
 
@@ -841,7 +860,14 @@ async def player_card(interaction: discord.Interaction, member: discord.Member =
     days = get_member_days(member)
     completed = user.get("completed_challenges", [])
 
-    rank = get_rank_with_time(member, rites)
+    approval_rank = None
+
+    for r in HIDDEN_PROGRESSION_RANKS:
+        if r in completed:
+            approval_rank = r
+            break
+
+    rank = approval_rank if approval_rank else get_rank_with_time(member, rites)
 
     # -------------------------
     # BADGES
