@@ -23,6 +23,7 @@ DB_FILE = "/data/database.db"
 BATTLE_REPORT_CHANNEL_ID = 1500525099655102525
 TECHSORCIST_RECORDS_CHANNEL_ID = 1505702243666497688
 EVENTS_CHANNEL_ID = 1506016793691426936
+GREAT_HALL_CHANNEL_ID = 1393664184771936279
 
 intents = discord.Intents.default() 
 intents.members = True 
@@ -32,7 +33,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 def is_double_rites_event():
     now = datetime.now(timezone.utc)
-    return 20 <= now.day <= 23
+    return (7 <= now.day <= 10) or (20 <= now.day <= 23)
   
 def init_db(): 
     
@@ -223,10 +224,10 @@ RANKS = {
 # ==================================================
 
 RELICS = {
-    "Hellslayer": {"gene": 35, "rites": 200},
-    "Serpent Staff of Sabazius": {"gene": 50, "rites": 250},
-    "Cessation": {"gene": 60, "rites": 300},
-    "Liber Exorcismus": {"gene": 70, "rites": 350},
+    "Hellslayer": {"gene": 25, "rites": 200},
+    "Serpent Staff of Sabazius": {"gene": 40, "rites": 250},
+    "Cessation": {"gene": 55, "rites": 300},
+    "Liber Exorcismus": {"gene": 75, "rites": 350},
     "Expulsiaris": {"gene": 100, "rites": 500},
     "Silent Cry": {"gene": 130, "rites": 675},
     "Exile Plate": {"gene": 150, "rites": 825},
@@ -415,21 +416,21 @@ CHALLENGE_REQUIREMENTS = {
         "approval": True
     },
     "Lexicanum": {
-        "rites": 150,
+        "rites": 350,
         "approval": True
 },
     "Judiciar": {
-        "rites": 150,
+        "rites": 300,
         "approval": True
     },
 
     "Tech Adept": {
-        "rites": 150,
+        "rites": 250,
         "approval": True
     },
 
     "Helix Adept": {
-        "rites": 150,
+        "rites": 200,
         "approval": True
     },
     
@@ -553,6 +554,19 @@ def get_progress_text(total):
     if not next_rank:
         return "MAX RANK"
     return f"Next: {next_rank}\n{progress_bar(total, next_req)}"
+
+async def assign_rank_role(member: discord.Member, role_name: str):
+    if not role_name:
+        return
+
+    role = discord.utils.get(member.guild.roles, name=role_name)
+    if not role:
+        return
+
+    rank_roles = [r for r in member.guild.roles if r.name in RANKS.values()]
+    await member.remove_roles(*rank_roles, reason="Rank sync")
+
+    await member.add_roles(role, reason="Challenge approval rank grant")
 
 async def update_rank_cached(member: discord.Member, user: dict):
     uid = str(member.id)
@@ -685,6 +699,25 @@ async def announce_relics(interaction, member, user):
             f"🏆 {member.mention} has unlocked relic: ⚜ {r} 🏆"
         )
 
+def announce_double_rites(bot):
+    channel = bot.get_channel(GREAT_HALL_CHANNEL_ID)
+    if not channel:
+        return
+
+    if is_double_rites_event():
+        # prevent spam on reconnects
+        if getattr(bot, "_double_rites_announced", False):
+            return
+
+        bot._double_rites_announced = True
+
+        return channel.send(
+            "**+++ 𝔇𝔬𝔲𝔟𝔩𝔢 XP 𝔄𝔠𝔱𝔦𝔳𝔢 +++**\n\n"
+            "Report to your battle stations armed and ready!\n"
+            "Now is the time to commit great deeds in the name of the Emperor!\n\n"
+            "The Emperor Protects!"
+        )
+        
 def get_next_relic(user):
     rites = user.get("rites", 0)
     gene = user.get("gene", 0)
@@ -784,9 +817,7 @@ async def approve_challenge(interaction: discord.Interaction, member: discord.Me
 
     role_name = CHALLENGE_TO_RANK.get(challenge_name)
     if role_name:
-        role = discord.utils.get(member.guild.roles, name=role_name)
-        if role:
-            await member.add_roles(role)
+        await assign_rank_role(member, role_name)
 
     save_user(member.id, user)
 
@@ -1002,20 +1033,21 @@ async def stratagem_report(
 
         await announce_relics(interaction, m, user)
 
+        next_relic, relic_req, relic_remaining = get_next_relic(user)
+
         if next_relic:
             relic_data = RELICS[next_relic]
-
             relic_text = (
                 f"Next Relic: {next_relic}\n"
                 f"Gene Seeds: {gene}/{relic_data['gene']}\n\n"
             )
         else:
-            relic_text = (
-                "All Relics Unlocked\n\n"
-            )
+            relic_text = "All Relics Unlocked\n\n"
 
         lines.append(
-            f"{m.mention}\nTotal: {rites}\n{get_progress_text(rites)}"
+            f"{m.mention}\n"
+            f"{relic_text}"
+            f"{get_progress_text(rites)}"
         )
 
     embed = discord.Embed(title="++𝕾𝖙𝖗𝖆𝖙𝖆𝖌𝖊𝖒 𝕽𝖊𝖕𝖔𝖗𝖙++", color=discord.Color.gold())
@@ -1201,7 +1233,7 @@ async def event_request(interaction: discord.Interaction, details: str):
     embed.add_field(name="Requested By", value=interaction.user.mention, inline=False)
 
     await interaction.response.send_message(
-        "📨 Your event request has been submitted for review.",
+        "Your event request has been submitted for review.",
         ephemeral=True
     )
 
@@ -1357,6 +1389,7 @@ async def on_ready():
         await bot.tree.sync()
         bot.synced = True
         print("Slash commands synced.")
+        await announce_double_rites(bot)
     except Exception as e:
         print(f"Sync failed: {e}")
 
